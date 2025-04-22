@@ -3,6 +3,7 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect, type ReactNode } from "react";
 
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 export default function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
@@ -12,5 +13,10 @@ export default function Providers({ children }: { children: ReactNode }) {
       capture_pageview: false,
     });
   }, []);
-  return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
+  const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+  return (
+    <ConvexProvider client={convex}>
+      <PostHogProvider client={posthog}>{children}</PostHogProvider>
+    </ConvexProvider>
+  );
 }

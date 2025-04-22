@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Phone, Globe, Instagram } from "lucide-react";
 import { toast } from "sonner";
 import { useToast } from "@/hooks/useToast";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 interface FormData {
   likedMost: string;
@@ -15,6 +17,7 @@ interface FormData {
 
 export default function FeedbackForm() {
   const { toast } = useToast();
+  const submitFormData = useMutation(api.feedback.createNewFeedbackEntry);
   const [formData, setFormData] = useState<FormData>({
     likedMost: "",
     expectationsNotMet: "",
@@ -39,7 +42,7 @@ export default function FeedbackForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -80,28 +83,42 @@ export default function FeedbackForm() {
       setLoading(false);
       return;
     }
+    const response = await submitFormData({
+      mostLiked: formData.likedMost,
+      expectations: formData.expectationsNotMet,
+      improvement: formData.improvementSuggestions,
+      includes: formData.futureInclusions,
+      moreContent: formData.receiveContent,
+      email: formData.email,
+    });
 
-    // Simulate form submission
-    setTimeout(() => {
-      console.log("Form submitted:", formData);
-      setSubmitted(true);
-      setLoading(false);
-
+    if (response.success === "false") {
       toast({
-        title: "¡Gracias por tu feedback!",
-        description: "Hemos recibido tus respuestas correctamente.",
+        title: "Tenemos problemas de comunicación",
+        description: "Por favor vuelve a intentarlo más tarde.",
+        variant: "destructive",
       });
+      setLoading(false);
+      return;
+    }
 
-      // Reset form after submission
-      setFormData({
-        likedMost: "",
-        expectationsNotMet: "",
-        improvementSuggestions: "",
-        futureInclusions: "",
-        receiveContent: false,
-        email: "",
-      });
-    }, 1500);
+    setSubmitted(true);
+    setLoading(false);
+
+    toast({
+      title: "¡Gracias por tu feedback!",
+      description: "Hemos recibido tus respuestas correctamente.",
+    });
+
+    // Reset form after submission
+    setFormData({
+      likedMost: "",
+      expectationsNotMet: "",
+      improvementSuggestions: "",
+      futureInclusions: "",
+      receiveContent: false,
+      email: "",
+    });
   };
 
   const validateEmail = (email: string) => {
@@ -249,7 +266,6 @@ export default function FeedbackForm() {
                         : "border-gray-300 bg-white"
                     } flex items-center justify-center`}
                   >
-                    
                     {!formData.receiveContent && (
                       <span className="w-2 h-2 rounded-full bg-white"></span>
                     )}
@@ -260,10 +276,7 @@ export default function FeedbackForm() {
 
               {formData.receiveContent && (
                 <div className="mt-4 transition-all duration-300 ease-in-out">
-                  <label
-                    htmlFor="email"
-                    className="block text-lg mb-1"
-                  >
+                  <label htmlFor="email" className="block text-lg mb-1">
                     Deja tu correo aquí!
                   </label>
                   <input
@@ -273,7 +286,7 @@ export default function FeedbackForm() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Correo:"
-                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white/80"
+                    className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white/80"
                   />
                 </div>
               )}
@@ -312,7 +325,7 @@ export default function FeedbackForm() {
             onClick={() => setSubmitted(false)}
             className="mt-8 text-primary hover:text-primary-dark underline"
           >
-            Enviar otro feedback
+            {!loading ? "Enviar otro feedback" : "Enviando ... "}
           </button>
         </div>
       )}
