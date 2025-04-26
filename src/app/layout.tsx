@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Old_Standard_TT, Questrial } from "next/font/google";
+import { Old_Standard_TT, Playfair_Display, Questrial } from "next/font/google";
 import "./globals.css";
 import Providers from "./Providers";
 import PageView from "@/components/posthog/PageView";
@@ -10,8 +10,8 @@ const questrial = Questrial({
   subsets: ["latin"],
 });
 
-const oldStandard = Old_Standard_TT({
-  weight: "700",
+const oldStandard = Playfair_Display({
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-old-standard",
 });

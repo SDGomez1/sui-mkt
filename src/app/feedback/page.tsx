@@ -4,6 +4,10 @@ import { Phone, Globe, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import logo from "@/assets/img/Logo.webp";
+import Image from "next/image";
+import Isologo from "@/assets/icons/Isologo";
+import WaveDecoration from "@/assets/icons/WaveDecoration";
 
 interface FormData {
   likedMost: string;
@@ -35,7 +39,6 @@ export default function FeedbackForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,10 +124,12 @@ export default function FeedbackForm() {
   };
 
   return (
-    <section className="bg-[#FFFBF5] p-10 flex flex-col  items-center justify-center min-h-svh">
+    <section className=" p-10 flex flex-col  items-center justify-center min-h-svh ">
       {!submitted ? (
         <>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 font-old-standard">
+          <WaveDecoration className="absolute h-auto hidden xl:block w-6xl -z-10 opacity-20 top-1/4 left-1/12" />
+                     
+          <h1 className="text-4xl font-bold md:text-5xl mb-4 font-old-standard text-primary">
             Queremos mejorar para ti!
           </h1>
           <p className="text-lg max-w-2xl text-gray-800">
@@ -147,7 +152,7 @@ export default function FeedbackForm() {
                 name="likedMost"
                 value={formData.likedMost}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white/80"
+                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white"
                 placeholder="Cuéntanos lo que más valoraste..."
               />
             </div>
@@ -164,7 +169,7 @@ export default function FeedbackForm() {
                 name="expectationsNotMet"
                 value={formData.expectationsNotMet}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white/80"
+                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white"
                 placeholder="Tus comentarios nos ayudan a mejorar..."
               />
             </div>
@@ -181,7 +186,7 @@ export default function FeedbackForm() {
                 name="improvementSuggestions"
                 value={formData.improvementSuggestions}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white/80"
+                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white"
                 placeholder="Tus ideas son valiosas para nosotros..."
               />
             </div>
@@ -199,7 +204,7 @@ export default function FeedbackForm() {
                 name="futureInclusions"
                 value={formData.futureInclusions}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white/80"
+                className="w-full rounded-lg border border-primary/30 p-3 text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition duration-200 bg-white"
                 placeholder="Ayúdanos a planear futuras mejoras..."
               />
             </div>
@@ -326,7 +331,7 @@ export default function FeedbackForm() {
       )}
 
       <div className="mt-16 pt-8 border-t border-primary/20">
-        <h3 className="text-xl font-semibold text-center mb-6 text-primary-dark">
+        <h3 className="text-xl font-semibold text-center  text-primary-dark mb-6">
           Estamos disponibles para ti!
         </h3>
         <div className="flex flex-col sm:flex-row justify-center gap-6 items-center">
@@ -335,16 +340,16 @@ export default function FeedbackForm() {
             className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
           >
             <Phone size={20} />
-            <span>3173914524</span>
+            <span>317 391 4524</span>
           </a>
           <a
-            href="http://www.suivelas.com"
+            href="http://suivelas.com"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
           >
             <Globe size={20} />
-            <span>www.suivelas.com</span>
+            <span>suivelas.com</span>
           </a>
           <a
             href="https://instagram.com/sui.velas"
@@ -353,9 +358,11 @@ export default function FeedbackForm() {
             className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
           >
             <Instagram size={20} />
-            <span>sui velas</span>
+            <span>sui.velas</span>
           </a>
         </div>
+
+        <Isologo className="size-24 mx-auto " />
       </div>
     </section>
   );
