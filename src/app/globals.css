@@ -2,5 +2,7 @@
 
 @theme {
   --font-old-standard: var(--font-old-standard);
-  --color-primary: #585CA6
+  --color-primary: #585CA6;
+  --color-text-black: #020817;
+  --font-open-sans: var(--font-open-sans);
 }
