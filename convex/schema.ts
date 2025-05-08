@@ -10,4 +10,14 @@ export default defineSchema({
     moreContent: v.boolean(),
     email: v.optional(v.string()),
   }),
+  order: defineTable({
+    firstName: v.string(),
+    lastName: v.string(),
+    email: v.string(),
+    phone: v.string(),
+    address: v.string(),
+    notes: v.string(),
+    status: v.optional(v.string()),
+    product: v.string(),
+  }),
 });
