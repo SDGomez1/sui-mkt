@@ -29,7 +29,7 @@ export default function Page() {
   const { data } = useQuery({
     queryKey: ["repoData"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:3000/api/v1/preferenceId");
+      const response = await fetch("https://suivelas.com/api/v1/preferenceId");
       return await response.json();
     },
     refetchOnMount: false,
