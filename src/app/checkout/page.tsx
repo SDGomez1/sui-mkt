@@ -61,6 +61,7 @@ export default function Page() {
       address: "",
       notes: "",
     },
+    mode: "onChange",
   });
   return (
     <section className="flex flex-col bg-linear-to-b from-white to-[#F2F3FF] min-h-svh">
@@ -200,7 +201,8 @@ export default function Page() {
               />
 
               <button
-                className={`px-4 py-2 text-white bg-primary rounded mx-auto mb-8 lg:m-0 w-full hover:bg-primary-hover transition cursor-pointer ${isPayment ? "hidden" : "block"}`}
+                className={`px-4 py-2 text-white bg-primary rounded mx-auto mb-8 lg:m-0 w-full hover:bg-primary-hover transition cursor-pointer disabled:bg-primary/50 disabled:cursor-default ${isPayment ? "hidden" : "block"} `}
+                disabled={!form.formState.isValid}
               >
                 Completar Pedido
               </button>

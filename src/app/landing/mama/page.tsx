@@ -70,7 +70,10 @@ export default function Page() {
           </p>
           <p className=" mt-4 ">empieza por aquí!</p>
 
-          <Link className="px-4 py-2 text-white bg-primary rounded mx-auto my-8 block text-center w-full hover:bg-primary-hover transition cursor-pointer" href="/checkout">
+          <Link
+            className="px-4 py-2 text-white bg-primary rounded mx-auto my-8 block text-center w-full hover:bg-primary-hover transition cursor-pointer"
+            href="/checkout"
+          >
             Comprar
           </Link>
         </div>

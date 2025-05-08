@@ -3,7 +3,7 @@ import { Globe, Instagram, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-primary mt-10 min-h-20 flex px-4 xl:px-40 justify-between items-center bg-primary/7">
+    <footer className="border-t border-primary mt-auto min-h-20 flex px-4 xl:px-40 justify-between items-center bg-primary/7">
       <div className="flex justify-center items-center">
         <Isologo className="h-20" />
         <p className="font-old-standard text-3xl text-primary">Sui</p>
