@@ -189,7 +189,7 @@ export default function Page() {
                     <FormLabel>Notas adicionales (opcional)</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Intrucciones especiales para la entrega, etc."
+                        placeholder="No quiero recibir guía gratis, quiero una carta ya escrita."
                         {...field}
                         disabled={isPayment}
                       />
@@ -242,7 +242,7 @@ export default function Page() {
             </div>
             <div className="flex justify-between ">
               <p className="text-sm text-gray-600  2xl:text-lg">Envio:</p>
-              <p className="text-sm  2xl:text-lg">gratis</p>
+              <p className="text-sm  2xl:text-lg font-bold">Gratis</p>
             </div>
           </div>
           <Separator />
