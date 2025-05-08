@@ -19,27 +19,37 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "../../../convex/_generated/api";
-import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
+import { Wallet } from "@mercadopago/sdk-react";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 export default function Page() {
-  initMercadoPago(process.env.NEXT_PUBLIC_MERCADOPAGO_KEY as string);
   const [preferenceId, setPreferenceId] = useState("");
-  const { data } = useQuery({
-    queryKey: ["repoData"],
-    queryFn: async () => {
-      const response = await fetch("https://suivelas.com/api/v1/preferenceId");
-      return await response.json();
-    },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  const [isPayment, setIsPayment] = useState(false);
+
   useEffect(() => {
-    if (data && preferenceId == "") {
-      setPreferenceId(data.id);
-    }
-  }, [data]);
+    const fetchPreference = async () => {
+      try {
+        const response = await fetch("/api/v1/preferenceId");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data && data.id) {
+          setPreferenceId(data.id);
+        } else {
+          console.warn("Preference ID not found in response data:", data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch preference ID:", err);
+      }
+    };
+
+    fetchPreference();
+  }, []);
+
   const createOrder = useMutation(api.order.createOrder);
   const form = useForm({
     resolver: zodResolver(schema),
@@ -62,7 +72,7 @@ export default function Page() {
         <div className="border border-primary/40 shadow-lg mx-4 p-4 rounded bg-white mb-4 lg:w-[49%] shrink-0">
           <Form {...form}>
             <form
-              className="flex flex-col  gap-4 "
+              className="flex flex-col  gap-4 mb-4"
               onSubmit={form.handleSubmit(
                 async (data) => {
                   const response = await createOrder({
@@ -74,6 +84,8 @@ export default function Page() {
                     notes: data.notes,
                     product: "kit dia madres",
                   });
+
+                  setIsPayment(true);
                 },
                 (error) => console.log(error),
               )}
@@ -88,7 +100,11 @@ export default function Page() {
                   <FormItem>
                     <FormLabel>Nombre</FormLabel>
                     <FormControl>
-                      <Input placeholder="John" {...field} />
+                      <Input
+                        placeholder="John"
+                        {...field}
+                        disabled={isPayment}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -101,7 +117,11 @@ export default function Page() {
                   <FormItem>
                     <FormLabel>Apellido</FormLabel>
                     <FormControl>
-                      <Input placeholder="Perez" {...field} />
+                      <Input
+                        placeholder="Perez"
+                        {...field}
+                        disabled={isPayment}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -114,7 +134,11 @@ export default function Page() {
                   <FormItem>
                     <FormLabel>Correo electrónico</FormLabel>
                     <FormControl>
-                      <Input placeholder="ejemplo@ejemplo.com" {...field} />
+                      <Input
+                        placeholder="ejemplo@ejemplo.com"
+                        {...field}
+                        disabled={isPayment}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -132,6 +156,7 @@ export default function Page() {
                         placeholder="3214567890"
                         {...field}
                         type="number"
+                        disabled={isPayment}
                       />
                     </FormControl>
                     <FormMessage />
@@ -146,7 +171,11 @@ export default function Page() {
                   <FormItem>
                     <FormLabel>Dirección</FormLabel>
                     <FormControl>
-                      <Input placeholder="Calle A#B-C" {...field} />
+                      <Input
+                        placeholder="Calle A#B-C"
+                        {...field}
+                        disabled={isPayment}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -162,16 +191,24 @@ export default function Page() {
                       <Textarea
                         placeholder="Intrucciones especiales para la entrega, etc."
                         {...field}
+                        disabled={isPayment}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Wallet initialization={{ preferenceId: "" }} />
-              <button>Completar Pedido</button>
+
+              <button
+                className={`px-4 py-2 text-white bg-primary rounded mx-auto mb-8 lg:m-0 w-full hover:bg-primary-hover transition cursor-pointer ${isPayment ? "hidden" : "block"}`}
+              >
+                Completar Pedido
+              </button>
             </form>
           </Form>
+          {isPayment && (
+            <Wallet initialization={{ preferenceId: preferenceId }} />
+          )}
         </div>
         <div className="border border-primary/40 shadow-lg mx-4 p-4 rounded bg-white mb-4">
           <h2 className="font-old-standard text-2xl text-primary self-center mb-4 text-center">
