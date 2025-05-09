@@ -1,84 +1,133 @@
-import Footer from "@/components/homePage/Footer";
-import ProductGallery from "./ProductGallery";
-import { CheckIcon } from "lucide-react";
-import Isologo from "@/assets/icons/Isologo";
+import Image from "next/image";
+import hero1 from "@/assets/img/firstMotherImage.png";
+import hero2 from "@/assets/img/warmCompositionMadre.webp";
+import hero3 from "@/assets/img/secondMotherImage.png";
 import Link from "next/link";
+import Footer from "@/components/homePage/Footer";
 
 export default function Page() {
   return (
-    <section className="overflow-x-hidden max-w-svw min-h-svh flex flex-col bg-linear-to-b from-white to-[#F2F3FF]">
-      <Isologo className="size-20 self-center" />
-      <div className="flex px-4 2xl:px-40 xl:px-20 flex-col lg:flex-row justify-between items-center  my-auto">
-        <div className="flex flex-col gap-8 lg:w-[47%] justify-center items-center">
-          <ProductGallery />
-          <p className="text-xl mt-4 font-old-standard text-primary italic text-center">
-            ✨ No es sólo un regalo. Es un acto espiritual. Y muchas veces, eso
-            es justo lo que se necesita✨
-          </p>
-          <div className=" text-center">
-            <p className="text-lg  font-bold">
-              Detalles que hacen la diferencia
-            </p>
-            <ul className="text-lg">
-              <li>🕯️ Cera vegetal menos tóxica.</li>
-              <li>🚚 Envío rápido y seguro.</li>
-              <li>💬 Atención personalizada para ti.</li>
-            </ul>
-          </div>
-        </div>
-        <div className="lg:w-1/2">
-          <h1 className="font-old-standard text-3xl text-primary font-bold mt-8 lg:mt-0">
-            ¿HACE CUÁNTO NO LE DICES A MAMÁ LO QUE SIGNIFICA PARA TI?
-          </h1>
-          <p className="font-bold text-2xl mt-4 ">$39.900 COP</p>
-          <p className="text-xl mt-4 font-old-standard text-primary ">
-            Este no es un regalo más. Es una herramienta para conectar.
-          </p>
-          <p className="text-xl mt-4">
-            Cuando no sabes cómo decirlo, esta vela lo dice por ti. A veces,
-            queremos decir tanto… pero las palabras no alcanzan. Este kit nació
-            de esa necesidad:{" "}
-            <span className=" underline">
-              de decir lo importante sin hablar demasiado.
-            </span>
-          </p>
-          <div className="bg-[#F2F3FF] rounded-2xl p-4 mt-4">
-            <p className="text-lg mb-2">Con este kit lograras:</p>
-            <ul className="text-lg space-y-2">
-              <li className="flex gap-2 items-center">
-                <span className="bg-[#DCDFFF] text-sm p-1 rounded-full text-primary font-bold size-7 flex justify-center items-center">
-                  <CheckIcon />
-                </span>
-                Que el regalo no solo guste, sino que toque el alma.{" "}
-              </li>
-              <li className="flex gap-2 items-center">
-                <span className="bg-[#DCDFFF] text-sm p-1 rounded-full text-primary font-bold size-7 flex justify-center items-center">
-                  <CheckIcon />
-                </span>
-                Que tu mensaje se sienta, no solo se lea.
-              </li>
-              <li className="flex gap-2 items-center">
-                <span className="bg-[#DCDFFF] text-sm p-1 rounded-full text-primary font-bold size-7 flex justify-center items-center">
-                  <CheckIcon />
-                </span>
-                Que quien lo reciba te recuerde por cómo la hiciste sentir.
-              </li>
-            </ul>
-          </div>
-          <p className="text-xl mt-4 font-bold">
-            ¿Quieres dar algo que no se olvide?
-          </p>
-          <p className=" mt-4 ">empieza por aquí!</p>
-
-          <Link
-            className="px-4 py-2 text-white bg-primary rounded mx-auto my-8 block text-center w-full hover:bg-primary-hover transition cursor-pointer"
-            href="/checkout"
-          >
-            Comprar
-          </Link>
-        </div>
+    <section>
+      <div className="px-6 pt-4 text-center xl:px-40">
+        <h1 className="text-primary font-bold text-lg mb-4 lg:text-4xl lg:mb-10">
+          ¿Cansado de Regalos que Terminan en un Cajón?
+        </h1>
+        <p className="lg:text-xl">Conoce nuestro Kit:</p>
+        <p className="mb-4 lg:text-xl">
+          <span className="font-bold">Una vela</span> +{" "}
+          <span className="font-bold">bendición </span>+{" "}
+          <span className="font-bold">carta de tu amor </span>La respuesta de
+          darle a mamá un regalo que realmente usará para recordarle cuánto la
+          amas.
+        </p>
+        <Image src={hero1} alt="Mama feliz con su regalo" className="w-full max-w-[800px] mx-auto" />
+        <Link
+          href="/checkout"
+          className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 lg:text-xl transition"
+        >
+          Quiero Regalarle Momentos Inolvidables
+        </Link>
+        <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
+          ¿Te Suena Familiar el Ciclo del Regalo "Por Cumplir"?
+        </h2>
+        <p className="mb-4 lg:text-xl">
+          Año tras año, buscas ese regalo perfecto para mamá. Quieres expresarle
+          todo tu amor y gratitud, pero a veces... las opciones parecen
+          impersonales, o terminan siendo algo que ella agradece con cortesía,
+          pero que no conecta profundamente con su corazón ni con su día a día.
+        </p>
+        <p className="mb-4 font-bold lg:text-xl">El resultado:</p>
+        <p className="mb-4 lg:text-xl">
+          Otro objeto bonito guardado, y esa sensación de que podrías haberle
+          dado algo con mucho más significado.
+        </p>
+        <h2 className="text-primary font-bold text-lg mb-4 font-old-standard lg:text-4xl">
+          Este Día de la Madre, Transforma Tu Intención en Su Experiencia Más
+          Preciada.
+        </h2>
+        <Image src={hero2} alt="Mama feliz con su regalo" className="w-full max-w-[800px] mx-auto"/>
+        <p className="mt-4 font-bold lg:text-xl">Imagina esto:</p>
+        <p className="mb-4 lg:text-xl">
+          Mamá enciende una vela con un suave aroma a vainilla, creando un
+          ambiente de calma instantánea. Toma en sus manos una tarjeta, no una
+          cualquiera, sino una donde <span className="font-bold">TÚ </span>has
+          volcado tus sentimientos más sinceros. Y mientras el aroma la
+          envuelve, lee una poderosa bendición de Proverbios 31,{" "}
+          <span className="font-bold">
+            recordándole su fuerza, su valor y el amor
+          </span>{" "}
+          incondicional que la rodea.
+        </p>{" "}
+        <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
+          Nuestro kit no es solo un regalo, es una experiencia diseñada para que
+          mamá:
+        </h2>
+        <ul className="space-y-4 text-left lg:text-xl">
+          <li>
+            🕯️
+            <span className="font-bold">
+              Cree un Momento Sagrado para Ella:
+            </span>{" "}
+            La vela de vainilla no solo ilumina, sino que invita a la pausa y a
+            la serenidad en su día ajetreado.
+          </li>
+          <li>
+            💌
+            <span className="font-bold">
+              Sienta Tu Amor Más Profundo, Cada Día:
+            </span>{" "}
+            La tarjeta personalizada se convierte en un tesoro que puede releer,
+            sintiendo tu abrazo y tus palabras sinceras una y otra vez.
+          </li>
+          <li>
+            💖
+            <span className="font-bold">
+              Se Sienta Bendecida y Fortalecida:
+            </span>{" "}
+            La bendición de Proverbios 31:25-29 es un recordatorio de su
+            increíble valía y la gracia que la acompaña.
+          </li>
+        </ul>
+        <Link
+          href="/checkout"
+          className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 transition lg:text-xl"
+        >
+          Quiero comprar
+        </Link>
+        <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
+          Más Que Un Regalo: Una Declaración de Cuánto Te Importa.
+        </h2>
+        <p className="mb-4 font-bold text-left lg:text-xl">Para ti:</p>
+        <ul className="space-y-4 text-left mb-4 lg:text-xl">
+          <li>
+            ✅<span className="font-bold">Di Adiós al Estrés:</span> Deja de
+            buscar y preocuparte. Has encontrado un regalo único, pensado y
+            lleno de significado
+          </li>
+          <li>
+            🌟
+            <span className="font-bold">
+              Conviértete en el Héroe del Día de la Madre:
+            </span>{" "}
+            Imagina la sonrisa de mamá, sus ojos iluminados. Este es el tipo de
+            regalo que genera conversaciones, el que te hace destacar por tu
+            consideración.
+          </li>
+          <li>
+            💖
+            <span className="font-bold">La Certeza de Acertar:</span> No es un
+            regalo más, es una experiencia de amor y bienestar que ella valorará
+            profundamente.
+          </li>
+        </ul>
+        <Image src={hero3} alt="Mama feliz con su regalo" className=" w-full max-w-[800px] mx-auto"/>
+        <Link
+          href="/checkout"
+          className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 transition lg:text-xl"
+        >
+          Quiero dárselo a mamá
+        </Link>
       </div>
-
       <Footer />
     </section>
   );
