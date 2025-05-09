@@ -1,7 +1,7 @@
 import Image from "next/image";
-import hero1 from "@/assets/img/firstMotherImage.png";
+import hero1 from "@/assets/img/firstMotherImage.webp";
 import hero2 from "@/assets/img/warmCompositionMadre.webp";
-import hero3 from "@/assets/img/secondMotherImage.png";
+import hero3 from "@/assets/img/secondMotherImage.webp";
 import Link from "next/link";
 import Footer from "@/components/homePage/Footer";
 
@@ -28,7 +28,7 @@ export default function Page() {
           Quiero Regalarle Momentos Inolvidables
         </Link>
         <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
-          ¿Te Suena Familiar el Ciclo del Regalo "Por Cumplir"?
+          ¿Te Suena Familiar el Ciclo del Regalo {'"Por Cumplir"'}?
         </h2>
         <p className="mb-4 lg:text-xl">
           Año tras año, buscas ese regalo perfecto para mamá. Quieres expresarle
@@ -57,7 +57,7 @@ export default function Page() {
             recordándole su fuerza, su valor y el amor
           </span>{" "}
           incondicional que la rodea.
-        </p>{" "}
+        </p>
         <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
           Nuestro kit no es solo un regalo, es una experiencia diseñada para que
           mamá:
