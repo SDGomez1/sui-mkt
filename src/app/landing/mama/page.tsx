@@ -20,12 +20,15 @@ export default function Page() {
           darle a mamá un regalo que realmente usará para recordarle cuánto la
           amas.
         </p>
-        <Image src={hero1} alt="Mama feliz con su regalo" className="w-full max-w-[800px] mx-auto" />
-        <Link
-          href="/checkout"
-          className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 lg:text-xl transition"
-        >
-          Quiero Regalarle Momentos Inolvidables
+        <Image
+          src={hero1}
+          alt="Mama feliz con su regalo"
+          className="w-full max-w-[800px] mx-auto"
+        />
+        <Link href="/checkout" className="cursor-pointer">
+          <button className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 lg:text-xl transition cursor-pointer">
+            Quiero Regalarle Momentos Inolvidables
+          </button>
         </Link>
         <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
           ¿Te Suena Familiar el Ciclo del Regalo {'"Por Cumplir"'}?
@@ -45,7 +48,11 @@ export default function Page() {
           Este Día de la Madre, Transforma Tu Intención en Su Experiencia Más
           Preciada.
         </h2>
-        <Image src={hero2} alt="Mama feliz con su regalo" className="w-full max-w-[800px] mx-auto"/>
+        <Image
+          src={hero2}
+          alt="Mama feliz con su regalo"
+          className="w-full max-w-[800px] mx-auto"
+        />
         <p className="mt-4 font-bold lg:text-xl">Imagina esto:</p>
         <p className="mb-4 lg:text-xl">
           Mamá enciende una vela con un suave aroma a vainilla, creando un
@@ -88,11 +95,10 @@ export default function Page() {
             increíble valía y la gracia que la acompaña.
           </li>
         </ul>
-        <Link
-          href="/checkout"
-          className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 transition lg:text-xl"
-        >
-          Quiero comprar
+        <Link href="/checkout" className="cursor-pointer">
+          <button className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 lg:text-xl transition cursor-pointer">
+            Quiero comprar
+          </button>
         </Link>
         <h2 className="text-primary font-bold text-lg mb-4 lg:text-3xl">
           Más Que Un Regalo: Una Declaración de Cuánto Te Importa.
@@ -120,12 +126,15 @@ export default function Page() {
             profundamente.
           </li>
         </ul>
-        <Image src={hero3} alt="Mama feliz con su regalo" className=" w-full max-w-[800px] mx-auto"/>
-        <Link
-          href="/checkout"
-          className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 transition lg:text-xl"
-        >
-          Quiero dárselo a mamá
+        <Image
+          src={hero3}
+          alt="Mama feliz con su regalo"
+          className=" w-full max-w-[800px] mx-auto"
+        />
+        <Link href="/checkout" className="cursor-pointer">
+          <button className="w-full bg-primary hover:bg-primary-hover text-white font-bold flex justify-center items-center px-1 py-2 text-sm rounded shadow-lg my-4 lg:text-xl transition cursor-pointer">
+            Quiero dárselo a mamá
+          </button>
         </Link>
       </div>
       <Footer />
