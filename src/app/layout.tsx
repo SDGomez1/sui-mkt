@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import {
+    Lora,
   Old_Standard_TT,
   Open_Sans,
   Playfair_Display,
+  Poppins,
   Questrial,
 } from "next/font/google";
 import "./globals.css";
@@ -21,8 +23,12 @@ const openSans = Open_Sans({
   variable: "--font-open-sans",
 });
 
-const oldStandard = Playfair_Display({
-  weight: "400",
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+});
+const oldStandard = Lora({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
   variable: "--font-old-standard",
 });
@@ -80,7 +86,7 @@ export default function RootLayout({
         </noscript>
       </head>
       <body
-        className={`${questrial.className} ${oldStandard.variable} ${openSans.className} antialiased`}
+        className={`${questrial.className} ${oldStandard.variable} ${openSans.variable} antialiased ${poppins.className}`}
       >
         <Providers>
           <PageView />
