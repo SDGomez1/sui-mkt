@@ -1,5 +1,6 @@
 import heroImage from "@/assets/img/HeroImage.webp";
 import Image from "next/image";
+import { Button } from "../ui/button";
 export default function Hero() {
   return (
     <section className="w-full px-4 lg:px-8  xl:px-40 flex flex-col lg:flex-row justify-between items-center bg-[#F2F3FF] h-auto py-8">
@@ -13,12 +14,14 @@ export default function Hero() {
           crear momentos íntimos con Dios
         </h2>
 
-        <button className="px-4 py-2 text-white bg-primary rounded mx-auto mb-8 lg:m-0 w-fit">
-          Comienza 7 días gratis
-        </button>
+        <Button>Comienza 7 días gratis</Button>
       </div>
       <div className="lg:w-1/2">
-        <Image src={heroImage} alt="Persona leyendo junto con vela" className="rounded-2xl"/>
+        <Image
+          src={heroImage}
+          alt="Persona leyendo junto con vela"
+          className="rounded-2xl"
+        />
       </div>
     </section>
   );

@@ -1,17 +1,52 @@
-import Isologo from "@/assets/icons/Isologo";
+"use client";
 import TextLogo from "@/assets/icons/TextLogo";
+import { ShoppingCartIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
+import { Button, buttonVariants } from "../ui/button";
+import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 
 export default function Navbar() {
+  const { data: userData } = authClient.useSession();
+  console.log(userData);
   return (
-    <nav className="px-4 lg:px-8 xl:px-40 flex justify-between items-center border-b border-b-primary/30 mb-10 py-4">
+    <nav className="px-4 lg:px-8 xl:px-40 flex justify-between items-center border-b border-b-primary/30 shadow  py-4 lg:h-20">
       <div className="flex justify-center items-center">
         <Link href="/">
           <TextLogo className="w-auto h-11" />
         </Link>
       </div>
-      <div>
-        <a className="py-2 px-4 bg-primary text-white rounded">Guia Gratuita</a>
+      <div className="flex justify-center items-center gap-2 lg:hidden">
+        <UserIcon className="size-7 text-neutral-500" />
+        <ShoppingCartIcon className="size-7 text-neutral-500" />
+      </div>
+      <div className="hidden lg:flex justify-center items-center gap-4">
+        {userData?.user ? (
+          <>
+            <Button onClick={() => authClient.signOut()}>{userData.user.name}</Button>
+          </>
+        ) : (
+          <>
+            <Link href={"/auth/login"} className={buttonVariants()}>
+              Inicia sesión
+            </Link>
+            <Link
+              href={"/auth/signUp"}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Crea tu cuenta
+            </Link>
+          </>
+        )}
+        <Link
+          href={"/cart"}
+          className={cn(
+            buttonVariants({ size: "icon", variant: "ghost" }),
+            "p-0 [&_svg]:size-6",
+          )}
+        >
+          <ShoppingCartIcon className="text-neutral-500" />
+        </Link>
       </div>
     </nav>
   );

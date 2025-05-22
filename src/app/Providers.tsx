@@ -3,6 +3,8 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { store } from "@/store/store";
+import { Provider } from "react-redux";
 
 import { initMercadoPago } from "@mercadopago/sdk-react";
 export default function Providers({ children }: { children: ReactNode }) {
@@ -21,7 +23,11 @@ export default function Providers({ children }: { children: ReactNode }) {
   const queryClient = new QueryClient();
   return (
     <PostHogProvider client={posthog}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </Provider>
     </PostHogProvider>
   );
 }
