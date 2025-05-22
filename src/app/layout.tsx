@@ -1,16 +1,8 @@
 import type { Metadata } from "next";
-import {
-    Lora,
-  Old_Standard_TT,
-  Open_Sans,
-  Playfair_Display,
-  Poppins,
-  Questrial,
-} from "next/font/google";
+import { Lora, Open_Sans, Poppins, Questrial } from "next/font/google";
 import "./globals.css";
 import Providers from "./Providers";
 import PageView from "@/components/posthog/PageView";
-import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
 
 const questrial = Questrial({
@@ -45,11 +37,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <Script
-          id="metaPixelInit"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
+        {process.env.NODE_ENV == "production" && (
+          <>
+            <Script
+              id="metaPixelInit"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
             <!-- Meta Pixel Code -->
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -62,35 +56,36 @@ export default function RootLayout({
             fbq('init', '1409422410201442');
             fbq('track', 'PageView');
             <!-- End Meta Pixel Code -->`,
-          }}
-        />
-        <Script
-          id="clarityPixelInit"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
+              }}
+            />
+            <Script
+              id="clarityPixelInit"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
             (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "rgeothn41v");                        `,
-          }}
-        />
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            className="hidden"
-            src="https://www.facebook.com/tr?id=1409422410201442&ev=PageView&noscript=1"
-          />
-        </noscript>
+            })(window, document, "clarity", "script", "rgeothn41v");`,
+              }}
+            />
+            <noscript>
+              <img
+                height="1"
+                width="1"
+                className="hidden"
+                src="https://www.facebook.com/tr?id=1409422410201442&ev=PageView&noscript=1"
+              />
+            </noscript>
+          </>
+        )}
       </head>
       <body
         className={`${questrial.className} ${oldStandard.variable} ${openSans.variable} antialiased ${poppins.className}`}
       >
         <Providers>
           <PageView />
-          <Toaster />
           {children}
         </Providers>
       </body>

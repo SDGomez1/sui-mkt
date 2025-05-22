@@ -1,4 +1,4 @@
-import { createPreference } from "@/services/mercadopago/checkoutPro";
+import { createPreference } from "@/backend/services/mercadopago/checkoutPro";
 import { type NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
