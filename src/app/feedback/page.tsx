@@ -1,11 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Phone, Globe, Instagram } from "lucide-react";
-import { useToast } from "@/hooks/useToast";
-import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import logo from "@/assets/img/Logo.webp";
-import Image from "next/image";
 import Isologo from "@/assets/icons/Isologo";
 import WaveDecoration from "@/assets/icons/WaveDecoration";
 
@@ -19,8 +14,6 @@ interface FormData {
 }
 
 export default function FeedbackForm() {
-  const { toast } = useToast();
-  const submitFormData = useMutation(api.feedback.createNewFeedbackEntry);
   const [formData, setFormData] = useState<FormData>({
     likedMost: "",
     expectationsNotMet: "",
@@ -51,62 +44,22 @@ export default function FeedbackForm() {
       !formData.improvementSuggestions ||
       !formData.futureInclusions
     ) {
-      toast({
-        title: "Campos requeridos",
-        description:
-          "Por favor completa todas las preguntas para enviar tu feedback.",
-        variant: "destructive",
-      });
       setLoading(false);
       return;
     }
 
     if (formData.receiveContent && !formData.email) {
-      toast({
-        title: "Email requerido",
-        description:
-          "Por favor ingresa tu correo para recibir contenido especial.",
-        variant: "destructive",
-      });
       setLoading(false);
       return;
     }
 
     if (formData.email && !validateEmail(formData.email)) {
-      toast({
-        title: "Formato de correo inválido",
-        description: "Por favor ingresa un correo electrónico válido.",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
-    }
-    const response = await submitFormData({
-      mostLiked: formData.likedMost,
-      expectations: formData.expectationsNotMet,
-      improvement: formData.improvementSuggestions,
-      includes: formData.futureInclusions,
-      moreContent: formData.receiveContent,
-      email: formData.email,
-    });
-
-    if (response.success === "false") {
-      toast({
-        title: "Tenemos problemas de comunicación",
-        description: "Por favor vuelve a intentarlo más tarde.",
-        variant: "destructive",
-      });
       setLoading(false);
       return;
     }
 
     setSubmitted(true);
     setLoading(false);
-
-    toast({
-      title: "¡Gracias por tu feedback!",
-      description: "Hemos recibido tus respuestas correctamente.",
-    });
 
     // Reset form after submission
     setFormData({
@@ -128,7 +81,7 @@ export default function FeedbackForm() {
       {!submitted ? (
         <>
           <WaveDecoration className="absolute h-auto hidden xl:block w-6xl -z-10 opacity-20 top-1/4 left-1/12" />
-                     
+
           <h1 className="text-4xl font-bold md:text-5xl mb-4 font-old-standard text-primary">
             Queremos mejorar para ti!
           </h1>

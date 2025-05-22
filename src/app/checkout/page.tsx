@@ -14,11 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "convex/react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { api } from "../../../convex/_generated/api";
 import { Wallet } from "@mercadopago/sdk-react";
 import { useEffect, useState } from "react";
 
@@ -50,7 +48,6 @@ export default function Page() {
     fetchPreference();
   }, []);
 
-  const createOrder = useMutation(api.order.createOrder);
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -76,16 +73,6 @@ export default function Page() {
               className="flex flex-col  gap-4 mb-4"
               onSubmit={form.handleSubmit(
                 async (data) => {
-                  const response = await createOrder({
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    email: data.email,
-                    phone: data.phone,
-                    address: data.address,
-                    notes: data.notes,
-                    product: "kit dia madres",
-                  });
-
                   setIsPayment(true);
                 },
                 (error) => console.log(error),
