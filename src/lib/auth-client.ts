@@ -1,4 +1,7 @@
-import { createAuthClient } from "better-auth/react"
+import { createAuthClient } from "better-auth/react";
 export const authClient = createAuthClient({
-    baseURL: "https://suivelas.com"
-})
+  baseURL:
+    process.env.NODE_ENV == "production"
+      ? "https://suivelas.com"
+      : "http://localhost:3000",
+});

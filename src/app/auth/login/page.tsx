@@ -42,8 +42,11 @@ export default function login() {
               <GoogleSignInButton />
             </CardContent>
             <CardFooter className="p-0 flex  items-center gap-2 mt-4">
-              <p className="text-sm text-neutral-400">¿Eres nuevo/a en Sui?</p>
-              <Link href="signUp" className="text-sm text-blue-500 flex items-center justify-center hover:text-blue-700 transition-all group ">
+              <p className="text-sm text-neutral-400">¿Eres nuevo en Sui?</p>
+              <Link
+                href="signUp"
+                className="text-sm text-blue-500 flex items-center justify-center hover:text-blue-700 transition-all group "
+              >
                 Comenzar
                 <ArrowRightIcon className="size-4 transition-all group-hover:ml-1" />
               </Link>
