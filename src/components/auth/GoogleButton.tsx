@@ -3,13 +3,15 @@ import { GoogleIcon } from "@/assets/icons/GoogleIcon";
 import { LoadingSpinner } from "@/assets/icons/LoadingSpinner";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function GoogleButton({ className }: { className?: string }) {
+  const path = usePathname();
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     setIsLoading(false);
-  }, []);
+  }, [path]);
   return (
     <button
       className={cn(
