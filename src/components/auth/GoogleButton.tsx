@@ -3,15 +3,11 @@ import { GoogleIcon } from "@/assets/icons/GoogleIcon";
 import { LoadingSpinner } from "@/assets/icons/LoadingSpinner";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function GoogleButton({ className }: { className?: string }) {
-  const path = usePathname();
   const [isLoading, setIsLoading] = useState(false);
-  useEffect(() => {
-    setIsLoading(false);
-  }, [path]);
+
   return (
     <button
       className={cn(
@@ -21,7 +17,10 @@ export default function GoogleButton({ className }: { className?: string }) {
       disabled={isLoading}
       onClick={async () => {
         setIsLoading(true);
-        authClient.signIn.social({ provider: "google" });
+        const a = await authClient.signIn.social({ provider: "google" });
+        if (a.data || a.error) {
+          setIsLoading(false);
+        }
       }}
     >
       {isLoading && <LoadingSpinner className="text-neutral-500" />}
