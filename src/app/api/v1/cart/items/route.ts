@@ -37,7 +37,12 @@ export async function POST(req: NextRequest) {
         filteredData.data.productId,
         filteredData.data.quantity,
       );
-      console.log(data);
+
+      return NextResponse.json({
+        success: true,
+        message: "cart data sucess",
+        data: data,
+      });
     } else {
       const detroyedGuestSession =
         await guestSessionService.destroyGuestSession();

@@ -6,6 +6,7 @@ interface SessionData {
 }
 
 class GuestSessionService {
+  private maxAgecookie = 60 * 60 * 24 * 14;
   private getSessionOptions() {
     const sessionOptions: SessionOptions = {
       password: process.env.BETTER_AUTH_SECRET as string,
@@ -14,7 +15,7 @@ class GuestSessionService {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
         sameSite: "lax",
-        maxAge: undefined,
+        maxAge: this.maxAgecookie,
       },
     };
     return sessionOptions;
@@ -48,7 +49,7 @@ class GuestSessionService {
     guestSession.guestCartId = crypto.randomUUID();
     await guestSession.save();
 
-    return guestSession.guestCartId ;
+    return guestSession.guestCartId;
   }
 
   async destroyGuestSession() {
