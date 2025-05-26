@@ -2,14 +2,14 @@ import prisma from "@/backend/db/prisma/prisma";
 
 class ProductService {
   async getProductById(productId: string) {
-    return prisma.product.findUnique({
+    return await prisma.product.findUnique({
       where: {
         id: productId,
       },
     });
   }
   async getAllProducts() {
-    return prisma.product.findMany({
+    return await prisma.product.findMany({
       select: {
         id: true,
         name: true,
@@ -23,4 +23,3 @@ class ProductService {
 }
 
 export const productService = new ProductService();
-

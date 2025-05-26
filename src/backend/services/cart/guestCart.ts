@@ -131,7 +131,9 @@ class GuestCartService {
       return this.removeItemFromCart(context, productId); // Or throw error
     }
     const productDetails = await productService.getProductById(productId);
-    if (!productDetails) throw new Error("Product not found for update");
+    if (!productDetails) {
+      throw new Error("Product not found for update");
+    }
     if (productDetails.stockQuantity < quantity) {
       throw new Error("Not enough stock for updated quantity");
     }

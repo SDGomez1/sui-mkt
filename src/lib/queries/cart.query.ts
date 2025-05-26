@@ -133,7 +133,6 @@ export const useUpdateProductToCart = () => {
       await updateProductToCartRequest(x.productId, x.quantity),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
-      toast("Producto añadido con exito al carrito");
     },
   });
 };

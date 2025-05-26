@@ -11,9 +11,14 @@ import { formatAsMoney } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { LoadingSpinner } from "@/assets/icons/LoadingSpinner";
 export default function CartMenu() {
-  const { data, error } = useCart();
+  const { data } = useCart();
 
-  const { mutate: clearCart } = useClearCart();
+  const {
+    mutate: clearCart,
+    isPending: clearLoading,
+    isSuccess: clearSucess,
+  } = useClearCart();
+
   const {
     mutate: removeItem,
     isPending: removeLoading,
@@ -26,6 +31,7 @@ export default function CartMenu() {
     isSuccess: updateSuccess,
     variables: updateVariables,
   } = useUpdateProductToCart();
+
   const cartItems = data?.data?.items.map((item) => {
     const isClearActive =
       removeLoading && removeVariables.productId == item.productId;
@@ -91,6 +97,8 @@ export default function CartMenu() {
     );
   });
 
+  const isClearLoading = clearLoading && !clearSucess;
+
   return (
     <Popover>
       <PopoverTrigger className="cursor-pointer relative">
@@ -116,12 +124,16 @@ export default function CartMenu() {
                 <p className="font-medium">
                   Total: ${formatAsMoney(data?.data.subtotal as number)}
                 </p>
-                <p
-                  className="text-xs text-destructive select-none cursor-pointer"
+                <button
+                  className="text-xs text-destructive select-none cursor-pointer hover:text-destructive-foreground flex justify-center gap-2"
                   onClick={() => clearCart()}
+                  disabled={isClearLoading}
                 >
                   limpiar carrito
-                </p>
+                  {isClearLoading && (
+                    <LoadingSpinner className="size-4 text-destructive mr-0" />
+                  )}
+                </button>
               </div>
               <Button>Ir a pagar</Button>
             </div>

@@ -1,5 +1,6 @@
 import { auth } from "@/backend/services/auth/auth";
 import { guestSessionService } from "@/backend/services/auth/guestSession";
+import { cartService } from "@/backend/services/cart/cart";
 import { guestCartService } from "@/backend/services/cart/guestCart";
 import { CartContext } from "@/backend/types/cart.types";
 import { NextRequest, NextResponse } from "next/server";
@@ -43,13 +44,18 @@ export async function POST(req: NextRequest) {
         data: data,
       });
     } else {
-      const detroyedGuestSession =
-        await guestSessionService.destroyGuestSession();
-      console.log("Guest cart context for /api/cart:", detroyedGuestSession.id);
-      console.log("logged cart context for /api/cart:", user);
+      const data = await cartService.addItemToCart(
+        { type: "guest", id: user.user.id },
+        filteredData.data.productId,
+        filteredData.data.quantity,
+      );
+      return NextResponse.json({
+        success: true,
+        message: "cart data sucess",
+        data: data,
+      });
     }
   } catch (e) {
-    console.log(e);
     return NextResponse.json(
       {
         sucess: false,
@@ -96,10 +102,15 @@ export async function DELETE(req: NextRequest) {
         data: data,
       });
     } else {
-      const detroyedGuestSession =
-        await guestSessionService.destroyGuestSession();
-      console.log("Guest cart context for /api/cart:", detroyedGuestSession.id);
-      console.log("logged cart context for /api/cart:", user);
+      const data = await cartService.removeItemFromCart(
+        { type: "guest", id: user.user.id },
+        filteredData.data.productId,
+      );
+      return NextResponse.json({
+        success: true,
+        message: "item removed sucess",
+        data: data,
+      });
     }
   } catch (e) {
     console.log(e);
@@ -151,10 +162,16 @@ export async function PUT(req: NextRequest) {
         data: data,
       });
     } else {
-      const detroyedGuestSession =
-        await guestSessionService.destroyGuestSession();
-      console.log("Guest cart context for /api/cart:", detroyedGuestSession.id);
-      console.log("logged cart context for /api/cart:", user);
+      const data = await cartService.updateCartItem(
+        { type: "guest", id: user.user.id },
+        filteredData.data.productId,
+        filteredData.data.quantity,
+      );
+      return NextResponse.json({
+        success: true,
+        message: "cart data sucess",
+        data: data,
+      });
     }
   } catch (e) {
     console.log(e);

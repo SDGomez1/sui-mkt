@@ -1,5 +1,6 @@
 import { auth } from "@/backend/services/auth/auth";
 import { guestSessionService } from "@/backend/services/auth/guestSession";
+import { cartService } from "@/backend/services/cart/cart";
 import { guestCartService } from "@/backend/services/cart/guestCart";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -23,10 +24,14 @@ export async function GET(req: NextRequest) {
         data: cartData,
       });
     } else {
+      const cartData = await cartService.getCart({
+        type: "guest",
+        id: user.user.id,
+      });
       return NextResponse.json({
         success: true,
         message: "cart data sucess",
-        data: "",
+        data: cartData,
       });
     }
   } catch (e) {
@@ -40,7 +45,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
 export async function DELETE(req: NextRequest) {
   try {
     const user = await auth.api.getSession({ headers: req.headers });
@@ -59,7 +63,15 @@ export async function DELETE(req: NextRequest) {
         data: cartData,
       });
     } else {
-      return NextResponse.json({ status: "ok" });
+      const cartData = await cartService.clearCart({
+        type: "guest",
+        id: user.user.id,
+      });
+      return NextResponse.json({
+        success: true,
+        message: "cart data sucess",
+        data: cartData,
+      });
     }
   } catch (e) {
     console.log(e);
