@@ -4,11 +4,14 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { useAllProducts } from "@/lib/queries/product.query";
 import { useAddProductToCart } from "@/lib/queries/cart.query";
+import { LoadingSpinner } from "@/assets/icons/LoadingSpinner";
 
 export default function ProductCarousel() {
   const { data: productsData } = useAllProducts();
-  const { mutate } = useAddProductToCart();
+  const { mutate, isPending, variables, isSuccess } = useAddProductToCart();
   const products = productsData?.data.map((product) => {
+    const isAdding = isPending && variables.productId === product.id;
+    const isLoading = isAdding && !isSuccess;
     return (
       <div
         className="flex w-52 flex-col shrink-0 h-96 lg:w-80 lg:h-auto"
@@ -33,8 +36,9 @@ export default function ProductCarousel() {
             onClick={() => {
               mutate({ productId: product.id, quantity: 1 });
             }}
+            disabled={isLoading}
           >
-            Añadir al Carrito
+            {isLoading ? <LoadingSpinner className="text-black"/> : "Añadir al Carrito"}
           </Button>
         </div>
       </div>
@@ -53,7 +57,7 @@ export default function ProductCarousel() {
           Ver todas
         </Link>
       </div>
-      <div className="overflow-x-scroll flex gap-x-9 lg:gap-x-20 pr-6 ">
+      <div className="overflow-x-auto flex gap-x-9 lg:gap-x-20 pr-6 ">
         {products}
       </div>
     </section>

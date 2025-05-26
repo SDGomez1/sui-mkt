@@ -1,10 +1,6 @@
-import {
-  QueryCache,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
+import { toast } from "sonner";
 
 const cartItemSchema = z.object({
   productId: z.string(),
@@ -58,16 +54,17 @@ const addProductToCartRequest = async (productId: string, quantity: number) => {
 export const useAddProductToCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (x: { productId: string; quantity: number }) =>
-      addProductToCartRequest(x.productId, x.quantity),
+    mutationFn: async (x: { productId: string; quantity: number }) =>
+      await addProductToCartRequest(x.productId, x.quantity),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast("Producto añadido con exito al carrito");
     },
   });
 };
 
 const clearCartRequest = async () => {
-  const response = await fetch("/api/v1/cart/items", {
+  const response = await fetch("/api/v1/cart", {
     method: "DELETE",
     credentials: "include",
   });
@@ -85,6 +82,58 @@ export const useClearCart = () => {
         return { success: true, message: "Cart data sucess", data: null };
       });
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+const removeItemRequest = async (productId: string) => {
+  const response = await fetch("/api/v1/cart/items", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ productId }),
+    credentials: "include",
+  });
+
+  return response.json();
+};
+
+export const useRemoveCartItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (x: { productId: string }) =>
+      await removeItemRequest(x.productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+const updateProductToCartRequest = async (
+  productId: string,
+  quantity: number,
+) => {
+  const response = await fetch("/api/v1/cart/items", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ productId, quantity }),
+    credentials: "include",
+  });
+
+  return response.json();
+};
+
+export const useUpdateProductToCart = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (x: { productId: string; quantity: number }) =>
+      await updateProductToCartRequest(x.productId, x.quantity),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast("Producto añadido con exito al carrito");
     },
   });
 };

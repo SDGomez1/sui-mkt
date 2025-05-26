@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./Providers";
 import PageView from "@/components/posthog/PageView";
 import Script from "next/script";
+import { Toaster } from "sonner";
 
 const questrial = Questrial({
   weight: "400",
@@ -16,7 +17,7 @@ const openSans = Open_Sans({
 });
 
 const poppins = Poppins({
-  weight: ["200","400", "500", "600", "700"],
+  weight: ["200", "400", "500", "600", "700"],
   variable: "--font-poppins",
   subsets: ["latin"],
 });
@@ -87,6 +88,7 @@ export default function RootLayout({
       >
         <Providers>
           <PageView />
+          <Toaster />
           {children}
         </Providers>
       </body>
