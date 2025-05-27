@@ -1,12 +1,36 @@
 import { createPreference } from "@/backend/services/mercadopago/checkoutPro";
 import { type NextRequest, NextResponse } from "next/server";
-export async function GET(request: NextRequest) {
+import { z } from "zod";
+export async function POST(request: NextRequest) {
+  const requestSchema = z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      quantity: z.number(),
+      unit_price: z.number(),
+    }),
+  );
+
+  const requestData = await request.json();
+  const preferenceOptions = requestSchema.safeParse(requestData);
+
+  if (!preferenceOptions.success) {
+    return NextResponse.json(
+      {
+        sucess: false,
+        message: "not valid options",
+      },
+      { status: 400 },
+    );
+  }
+
   try {
-    const preference = await createPreference();
+    const preference = await createPreference(preferenceOptions.data);
 
     return NextResponse.json({
       sucess: true,
-      id: preference.id,
+      message: "preference created",
+      data: preference.id,
     });
   } catch (error) {
     console.error("Error in createPreference API route:", error);

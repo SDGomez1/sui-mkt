@@ -1,10 +1,9 @@
-"use client"
 import TextLogo from "@/assets/icons/TextLogo";
-import { MenuIcon , UserIcon } from "lucide-react";
+import { MenuIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import CartMenu from "./CartMenu";
-import { authClient } from "@/lib/auth-client";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   return (
@@ -28,7 +27,7 @@ export default function Navbar() {
           Empieza gratis
         </Button>
         <CartMenu />
-        <UserIcon className="size-7 stroke-1" onClick={() => authClient.signOut()}/>
+        <UserMenu />
       </div>
     </nav>
   );

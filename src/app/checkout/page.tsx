@@ -1,6 +1,4 @@
 "use client";
-import Isologo from "@/assets/icons/Isologo";
-import composition from "@/assets/img/warmCompositionMadre.webp";
 import Footer from "@/components/homePage/Footer";
 import {
   Form,
@@ -14,39 +12,41 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Wallet } from "@mercadopago/sdk-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Navbar from "@/components/homePage/Navbar";
+import { useCart } from "@/lib/queries/cart.query";
+import { formatAsMoney } from "@/lib/utils";
+import { useGetPreferenceId } from "@/lib/queries/checkout.query";
+import { productItems } from "@/backend/services/mercadopago/checkoutPro";
 
 export default function Page() {
   const [preferenceId, setPreferenceId] = useState("");
   const [isPayment, setIsPayment] = useState(false);
 
-  useEffect(() => {
-    const fetchPreference = async () => {
-      try {
-        const response = await fetch("/api/v1/preferenceId");
+  const { data: cartData } = useCart();
+  const { mutateAsync: getPreferenceId } = useGetPreferenceId();
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data && data.id) {
-          setPreferenceId(data.id);
-        } else {
-          console.warn("Preference ID not found in response data:", data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch preference ID:", err);
-      }
-    };
-
-    fetchPreference();
-  }, []);
+  const cartItems = cartData?.data.items.map((item) => {
+    return (
+      <div className="flex gap-7 items-center mb-4" key={item.productId}>
+        <img
+          src={item.imageUrl}
+          alt="imagen del producto"
+          className="size-20 "
+        />
+        <div>
+          <p className="font-medium">{item.name}</p>
+          <p className="text-neutral-500">Catidad: {item.quantity}</p>
+          <p className="text-neutral-500">
+            precio unitario: ${formatAsMoney(item.price)}
+          </p>
+        </div>
+      </div>
+    );
+  });
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -60,25 +60,40 @@ export default function Page() {
     },
     mode: "onChange",
   });
+  console.log(preferenceId);
   return (
-    <section className="flex flex-col bg-linear-to-b from-white to-[#F2F3FF] min-h-svh">
-      <Isologo className="size-20 self-center" />
-      <h2 className="font-old-standard text-4xl text-primary self-center mb-4">
-        Finaliza tu compra
-      </h2>
-      <div className="flex flex-col lg:flex-row lg:justify-between xl:px-40">
+    <section className="flex flex-col min-h-svh">
+      <Navbar />
+      <div className="flex flex-col lg:flex-row lg:justify-between xl:px-40 mt-20 py-10">
         <div className="border border-primary/40 shadow-lg mx-4 p-4 rounded bg-white mb-4 lg:w-[49%] shrink-0">
           <Form {...form}>
             <form
               className="flex flex-col  gap-4 mb-4"
               onSubmit={form.handleSubmit(
                 async (data) => {
-                  setIsPayment(true);
+                  if (!cartData) {
+                    return;
+                  }
+                  const formattedCartItems = cartData.data.items.map((item) => {
+                    return {
+                      id: item.productId,
+                      title: item.name,
+                      quantity: item.quantity,
+                      unit_price: item.price,
+                    };
+                  });
+                  const prefId = await getPreferenceId(formattedCartItems);
+                  if (!prefId.sucess) {
+                    return;
+                  } else {
+                    setPreferenceId(prefId.data);
+                    setIsPayment(true);
+                  }
                 },
                 (error) => console.log(error),
               )}
             >
-              <h3 className="font-old-standard text-2xl self-center text-primary mb-4">
+              <h3 className="font-old-standard text-2xl self-center font-medium mb-4">
                 Información de envío
               </h3>
               <FormField
@@ -189,45 +204,31 @@ export default function Page() {
 
               <button
                 className={`px-4 py-2 text-white bg-primary rounded mx-auto mb-8 lg:m-0 w-full hover:bg-primary-hover transition cursor-pointer disabled:bg-primary/50 disabled:cursor-default ${isPayment ? "hidden" : "block"} `}
-                disabled={!form.formState.isValid}
+                disabled={!form.formState.isValid || !cartData}
               >
                 Completar Pedido
               </button>
             </form>
           </Form>
-          {isPayment && (
+          {isPayment && preferenceId !== "" && (
             <Wallet initialization={{ preferenceId: preferenceId }} />
           )}
         </div>
-        <div className="border border-primary/40 shadow-lg mx-4 p-4 rounded bg-white mb-4">
-          <h2 className="font-old-standard text-2xl text-primary self-center mb-4 text-center">
+        <div className="border border-primary/40 shadow-lg mx-4 p-4 rounded bg-white mb-4 lg:w-full">
+          <h2 className="font-old-standard text-2xl font-medium self-center mb-4 text-center">
             Resumen del pedido
           </h2>
-          <div className="flex justify-between gap-2 items-center mb-4">
-            <Image
-              src={composition}
-              alt="imagen del producto"
-              className="w-2/5 aspect-square rounded-xl"
-            />
-            <div className="lg:w-1/2 ">
-              <p className="font-bold 2xl:text-xl">Regalo dia de la madre</p>
-              <p className="text-sm text-gray-600 mb-2 2xl:text-lg">
-                vela aromatizada de 200 gramos
-              </p>
-              <p className="text-sm mb-2 2xl:text-lg"> Cantidad: 1 $39.900</p>
-              <p className="text-sm text-gray-600 2xl:text-lg">
-                Gratis 1 Carta de bendición
-              </p>
-              <p className="text-sm text-gray-600 2xl:text-lg">
-                Gratis 1 Guía para escribir
-              </p>
-            </div>
-          </div>
+          {cartItems}
           <Separator />
           <div className="py-4">
             <div className="flex justify-between mb-2">
               <p className="text-sm text-gray-600 2xl:text-lg">Subtotal:</p>
-              <p className="text-sm 2xl:text-lg">$39.900</p>
+              <p className="text-sm 2xl:text-lg">
+                $
+                {formatAsMoney(
+                  cartData?.data.subtotal ? cartData.data.subtotal : 0,
+                )}
+              </p>
             </div>
             <div className="flex justify-between ">
               <p className="text-sm text-gray-600  2xl:text-lg">Envio:</p>
@@ -237,7 +238,12 @@ export default function Page() {
           <Separator />
           <div className="flex justify-between pt-4">
             <p className="font-medium  2xl:text-lg">Total:</p>
-            <p className="text-primary font-bold 2xl:text-lg">$39.900</p>
+            <p className="text-primary font-bold 2xl:text-lg">
+              $
+              {formatAsMoney(
+                cartData?.data.subtotal ? cartData.data.subtotal : 0,
+              )}
+            </p>
           </div>
         </div>
       </div>

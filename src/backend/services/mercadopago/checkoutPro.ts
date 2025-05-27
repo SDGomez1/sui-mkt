@@ -4,19 +4,19 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGOKEY as string,
 });
 
-export async function createPreference() {
+export interface productItems {
+    id: string;
+    title: string;
+    quantity: number;
+    unit_price: number
+}
+
+export async function createPreference(items: productItems[]) {
   const preference = new Preference(client);
 
   const preferenceId = await preference.create({
     body: {
-      items: [
-        {
-          id: "1",
-          title: "kit dia madres",
-          quantity: 1,
-          unit_price: 39900,
-        },
-      ],
+      items: items,
       back_urls: {
         success: "https://suivelas.com/thankyou",
         failure: "http://suivelas.com",

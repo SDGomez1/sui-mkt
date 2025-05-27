@@ -10,6 +10,7 @@ import {
 import { formatAsMoney } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { LoadingSpinner } from "@/assets/icons/LoadingSpinner";
+import Link from "next/link";
 export default function CartMenu() {
   const { data } = useCart();
 
@@ -135,7 +136,9 @@ export default function CartMenu() {
                   )}
                 </button>
               </div>
-              <Button>Ir a pagar</Button>
+              <Link href={"/checkout"} className="w-full cursor-pointer">
+                <Button className="w-full cursor-pointer">Ir a pagar</Button>
+              </Link>
             </div>
           </>
         ) : (
