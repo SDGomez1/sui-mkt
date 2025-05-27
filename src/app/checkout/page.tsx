@@ -211,7 +211,20 @@ export default function Page() {
             </form>
           </Form>
           {isPayment && preferenceId !== "" && (
-            <Wallet initialization={{ preferenceId: preferenceId }} />
+            <span
+              onClick={() => {
+                form.reset();
+                setIsPayment(false);
+                setPreferenceId("");
+              }}
+            >
+              <Wallet
+                initialization={{
+                  preferenceId: preferenceId,
+                  redirectMode: "self",
+                }}
+              />
+            </span>
           )}
         </div>
         <div className="border border-primary/40 shadow-lg mx-4 p-4 rounded bg-white mb-4 lg:w-full">
