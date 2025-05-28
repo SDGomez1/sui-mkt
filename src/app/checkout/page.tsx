@@ -20,7 +20,7 @@ import Navbar from "@/components/homePage/Navbar";
 import { useCart } from "@/lib/queries/cart.query";
 import { formatAsMoney } from "@/lib/utils";
 import { useGetPreferenceId } from "@/lib/queries/checkout.query";
-import { productItems } from "@/backend/services/mercadopago/checkoutPro";
+import { useCreateOrder } from "@/lib/queries/order.query";
 
 export default function Page() {
   const [preferenceId, setPreferenceId] = useState("");
@@ -28,6 +28,7 @@ export default function Page() {
 
   const { data: cartData } = useCart();
   const { mutateAsync: getPreferenceId } = useGetPreferenceId();
+  const { mutateAsync: createOrder } = useCreateOrder();
 
   const cartItems = cartData?.data.items.map((item) => {
     return (
@@ -60,7 +61,6 @@ export default function Page() {
     },
     mode: "onChange",
   });
-  console.log(preferenceId);
   return (
     <section className="flex flex-col min-h-svh">
       <Navbar />
@@ -74,6 +74,19 @@ export default function Page() {
                   if (!cartData) {
                     return;
                   }
+                  try {
+                    await createOrder({
+                      firstName: data.firstName,
+                      lastName: data.lastName,
+                      email: data.email,
+                      phone: data.phone,
+                      address: data.address,
+                      notes: data.notes,
+                    });
+                  } catch (e) {
+                    console.log(e);
+                  }
+
                   const formattedCartItems = cartData.data.items.map((item) => {
                     return {
                       id: item.productId,

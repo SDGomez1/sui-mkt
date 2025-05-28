@@ -12,7 +12,7 @@ export default function Navbar() {
         <Link href="/" className="hidden lg:block">
           <TextLogo className="w-auto h-11" />
         </Link>
-        <MenuIcon className="lg:hidden" />
+        <MenuIcon className="lg:hidden opacity-0" />
       </div>
       <div className="lg:hidden w-20">
         <Link href="/">
@@ -22,7 +22,7 @@ export default function Navbar() {
       <div className="flex justify-end items-center gap-2 w-20 lg:w-auto">
         <Button
           variant={"outline"}
-          className="text-primary bg-white border-primary mr-8 hidden lg:block  hover:text-[#292F7F]"
+          className="text-primary bg-white border-primary mr-8 hidden lg:hidden  hover:text-[#292F7F]"
         >
           Empieza gratis
         </Button>

@@ -2,10 +2,11 @@ import heroImage from "@/assets/img/sui landing.jpg";
 
 import Image from "next/image";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="w-full flex flex-col lg:flex-row justify-between items-center bg-[#F9F9F7] h-auto pt-8 mt-20 lg:px-40 lg:pt-0 2xl:justify-center 2xl:gap-40">
+    <section className="w-full flex flex-col lg:flex-row justify-between items-center bg-[#F9F9F7] h-auto pt-8 mt-20 lg:px-40 lg:pt-0 2xl:justify-center 2xl:gap-40 ">
       <div className="flex-col flex lg:w-[520px]">
         <div className="flex flex-col px-6 ">
           <h1 className="font-old-standard text-3xl lg:text-4xl text-text-black lg:text-left font-bold">
@@ -18,10 +19,12 @@ export default function Hero() {
           </h2>
         </div>
         <div className="flex gap-4 justify-start items-center w-full mb-4 px-6">
-          <Button className="lg:text-base">Nuestras velas</Button>
+          <Link href={"/#products"} > 
+            <Button className="lg:text-base">Nuestras velas</Button>
+          </Link>
           <Button
             variant={"outline"}
-            className="text-primary bg-[#F9F9F7] border-primary hover:text-[#292F7F] lg:text-base"
+            className="text-primary bg-[#F9F9F7] border-primary hover:text-[#292F7F] lg:text-base hidden"
           >
             Empieza gratis
           </Button>

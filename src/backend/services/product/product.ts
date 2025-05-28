@@ -16,6 +16,7 @@ class ProductService {
         featuredImage: true,
         price: true,
         description: true,
+                url:true
       },
       take: 5,
     });

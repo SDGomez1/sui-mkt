@@ -11,6 +11,7 @@ const AllProductResponse = z.object({
       description: z.string(),
       price: z.string(),
       featuredImage: z.string(),
+      url: z.string(),
     }),
   ),
 });
@@ -25,6 +26,6 @@ export const useAllProducts = () => {
   return useQuery({
     queryKey: ["products"],
     queryFn: fetchAllProducts,
-        refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 };
