@@ -30,7 +30,7 @@ export default function Page() {
   const { mutateAsync: getPreferenceId } = useGetPreferenceId();
   const { mutateAsync: createOrder } = useCreateOrder();
 
-  const cartItems = cartData?.data.items.map((item) => {
+  const cartItems = cartData?.data?.items.map((item) => {
     return (
       <div className="flex gap-7 items-center mb-4" key={item.productId}>
         <img
@@ -252,7 +252,7 @@ export default function Page() {
               <p className="text-sm 2xl:text-lg">
                 $
                 {formatAsMoney(
-                  cartData?.data.subtotal ? cartData.data.subtotal : 0,
+                  cartData?.data?.subtotal ? cartData.data.subtotal : 0,
                 )}
               </p>
             </div>
@@ -267,7 +267,7 @@ export default function Page() {
             <p className="text-primary font-bold 2xl:text-lg">
               $
               {formatAsMoney(
-                cartData?.data.subtotal ? cartData.data.subtotal : 0,
+                cartData?.data?.subtotal ? cartData.data.subtotal : 0,
               )}
             </p>
           </div>

@@ -4,7 +4,7 @@ import { Globe, Instagram, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-primary mt-auto min-h-20 flex px-4 xl:px-40 justify-between items-center ">
+    <footer className="border-t border-primary mt-auto min-h-20 flex px-4 xl:px-40 justify-between items-center pb-6">
       <div className="flex justify-center items-center">
         <TextLogo className="h-15 opacity-80" />
       </div>
