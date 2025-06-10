@@ -24,7 +24,7 @@ export default async function Page({
     <section>
       <Navbar></Navbar>
       <div className=" px-6 lg:px-32 flex justify-center pt-24 flex-col lg:flex-row">
-        <div className="justify-center lg:w-[48%] shrink-0 flex items-center max-h-[500px]">
+        <div className="justify-center lg:w-[48%] shrink-0 flex items-center max-h-[500px] flex-col">
           <Image
             src={productData?.featuredImage as string}
             alt=""
@@ -33,6 +33,10 @@ export default async function Page({
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABTklEQVR4nM2Sv0sCARTHHw39A/2wKSEaImqQanCooSWFHHKJ6HcN0SDYJA2OgQc1BRGWOCQJLkndENggtAhSSwlxXWcUQdyBnJ6e6KHf8IIg7I7Cpe/04H0/8L5fHqEF0f+DXxQFKVH8G1yt1dC9F8LyRQIz0XMQE8RrsajvFE0zhuVKBbaDCKhnAk/5/KfB7cVi8hpRQWi65Bv8IMsg5yZW2ARckTPYA0dfO+dpHGv7h8awVC7jLpfTZ1FVQdZxbN/cwp9Kw+bfRfvUtHnmhjhZxtZlEuTZAS34QJOroN4h9M0tmcNavY53VUWQ4zAfY0FjbpBlENRmgS8UNYffSiW9mPAjj9lIHOT2gEZcoK4BsPecOdwoLZbNgslkMMocgxwbIKsdRB1N8X7MfMLzWGevQN4AaNgB6uzHs6L8Dm6oUK0iLUkQCgUjS2u//QHEtyYI7U7rRgAAAABJRU5ErkJggg=="
           />
+          <p className="text-sm text-center mt-4">
+            <span className="text-destructive font-bold">* </span>Imagen solo de referencia. los detalles pueden variar al ser una
+            vela artesanal
+          </p>
         </div>
         <div className="lg:w-[48%] mt-10 lg:mt-0 ">
           <h1 className="font-old-standard text-4xl font-medium mb-4">
@@ -44,7 +48,9 @@ export default async function Page({
           </p>
           <div className="mt-4 flex items-center gap-4 text-lg">
             <p className="font-bold text-neutral-500 line-through">$55,000 </p>
-            <p className="font-bold">${formatAsMoney(Number(productData.price))}</p>
+            <p className="font-bold">
+              ${formatAsMoney(Number(productData.price))}
+            </p>
           </div>
           <p className="mb-4 text-sm font-medium">
             Tamaño de la vela: <span className="text-neutral-600">200g</span>
