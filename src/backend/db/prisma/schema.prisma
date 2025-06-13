@@ -8,8 +8,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProductType {
+  PURCHASABLE
+  TRIAL
+}
+
 model User {
-  id            String    @id
+  id            String           @id
   name          String
   email         String
   emailVerified Boolean
@@ -20,6 +25,7 @@ model User {
   accounts      Account[]
   cart          Cart?
   orders        Order[]
+  freeTrials    UserFreeTrials[]
 
   @@unique([email])
   @@map("user")
@@ -71,19 +77,21 @@ model Verification {
 }
 
 model Product {
-  id            String         @id @default(nanoid())
+  id            String           @id @default(nanoid())
   name          String
   description   String
-  price         Decimal        @db.Decimal(10, 2)
-  sku           String         @unique
+  price         Decimal          @db.Decimal(10, 2)
+  sku           String           @unique
   featuredImage String
-  stockQuantity Int            @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  stockQuantity Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   cartItems     CartItem[]
   productImages ProductImage[]
   orderItems    OrderItem[]
-  url           String        @default("/")
+  url           String           @default("/")
+  productType   ProductType      @default(PURCHASABLE)
+  freeTrials    UserFreeTrials[]
 }
 
 model ProductImage {
@@ -133,10 +141,26 @@ model Order {
 model OrderItem {
   id        String   @id @default(nanoid())
   orderId   String
-  quantity Int
+  quantity  Int
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model UserFreeTrials {
+  id        String   @id @default(nanoid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  name      String?
+  phone     String?
+  address   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
 }

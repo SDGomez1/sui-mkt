@@ -174,7 +174,7 @@ export default async function Page({
           marcar en lugar de un encuentro apreciado. Sólo tu haces el cambio..
         </p>
         <p className="mb-4">
-          ¿Estas hlista(o) para transformar tu tiempo de oración en una
+          ¿Estas lista(o) para transformar tu tiempo de oración en una
           experiencia llena de gozo y profundamente conectada?
         </p>
         <BuyNowButton productId={productId} className="w-1/2 mx-auto my-10" />
