@@ -151,8 +151,8 @@ model OrderItem {
 
 model UserFreeTrials {
   id        String   @id @default(nanoid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
   name      String?
@@ -162,5 +162,5 @@ model UserFreeTrials {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, productId])
+  @@unique([productId])
 }

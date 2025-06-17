@@ -2,12 +2,12 @@ import prisma from "@/backend/db/prisma/prisma";
 
 class FreeTrialService {
   async createFreeTrial(
-    userId: string,
     productId: string,
     name: string,
     phone: string,
     address: string,
     notes: string,
+    userId?: string,
   ) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
@@ -19,19 +19,6 @@ class FreeTrialService {
 
     if (product.productType !== "TRIAL") {
       throw new Error("The product is not a free trial product");
-    }
-
-    const exisitingFreeTrial = await prisma.userFreeTrials.findUnique({
-      where: {
-        userId_productId: {
-          userId: userId,
-          productId: productId,
-        },
-      },
-    });
-
-    if (exisitingFreeTrial) {
-      throw new Error("Free trial already claimed");
     }
 
     const newFreeTrial = await prisma.userFreeTrials.create({

@@ -34,7 +34,7 @@ export default async function Page({
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABTklEQVR4nM2Sv0sCARTHHw39A/2wKSEaImqQanCooSWFHHKJ6HcN0SDYJA2OgQc1BRGWOCQJLkndENggtAhSSwlxXWcUQdyBnJ6e6KHf8IIg7I7Cpe/04H0/8L5fHqEF0f+DXxQFKVH8G1yt1dC9F8LyRQIz0XMQE8RrsajvFE0zhuVKBbaDCKhnAk/5/KfB7cVi8hpRQWi65Bv8IMsg5yZW2ARckTPYA0dfO+dpHGv7h8awVC7jLpfTZ1FVQdZxbN/cwp9Kw+bfRfvUtHnmhjhZxtZlEuTZAS34QJOroN4h9M0tmcNavY53VUWQ4zAfY0FjbpBlENRmgS8UNYffSiW9mPAjj9lIHOT2gEZcoK4BsPecOdwoLZbNgslkMMocgxwbIKsdRB1N8X7MfMLzWGevQN4AaNgB6uzHs6L8Dm6oUK0iLUkQCgUjS2u//QHEtyYI7U7rRgAAAABJRU5ErkJggg=="
           />
           <p className="text-sm text-center mt-4">
-            <span className="text-destructive font-bold">* </span>Imagen solo de referencia. los detalles pueden variar al ser una
+            <span className="text-destructive font-bold">* </span>Imagen de referencia. los detalles pueden variar al ser una
             vela artesanal
           </p>
         </div>
