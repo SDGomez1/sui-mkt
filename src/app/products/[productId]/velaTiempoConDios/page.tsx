@@ -80,7 +80,7 @@ export default async function Page({
             </p>
           </li>
           <li className="flex gap-2 ">
-            <Flame className="text-[#B6D5F0] size-10 fill-[#B6D5F0]" />
+            <Flame className="text-[#B6D5F0] size-10 fill-[#B6D5F0] shrink-0" />
             <p>
               Playlist Seleccionada: Un simple código QR en la vela te da acceso
               inmediato a música que silencia el ruido exterior y enfoca tu
