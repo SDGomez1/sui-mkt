@@ -1,11 +1,13 @@
 export interface ProductDetails {
   productId: string;
   name: string;
-  price: number; 
+  price: number;
   imageUrl: string;
 }
 
 export interface CartItem extends ProductDetails {
+  fraganceName: string;
+  fraganceId: string;
   quantity: number;
   itemTotal: number;
 }
@@ -14,22 +16,24 @@ export interface GuestCartStorage {
   items: Array<{
     productId: string;
     quantity: number;
-    price: number;     name: string;
+    price: number;
+    name: string;
     imageUrl: string;
+    fraganceName: string;
+    fraganceId: string;
   }>;
-  createdAt: string; 
-  updatedAt: string; 
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CartData {
-  cartId: string; 
+  cartId: string;
   items: CartItem[];
   subtotal: number;
   totalItems: number;
   createdAt: string;
   updatedAt: string;
 }
-
 
 export type CartContext = {
   type: "guest";

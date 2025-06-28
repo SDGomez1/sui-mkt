@@ -83,7 +83,6 @@ model Product {
   price         Decimal          @db.Decimal(10, 2)
   sku           String           @unique
   featuredImage String
-  stockQuantity Int              @default(0)
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   cartItems     CartItem[]
@@ -92,6 +91,7 @@ model Product {
   url           String           @default("/")
   productType   ProductType      @default(PURCHASABLE)
   freeTrials    UserFreeTrials[]
+  fragances     Fragrance[]
 }
 
 model ProductImage {
@@ -104,22 +104,24 @@ model ProductImage {
 model Cart {
   id        String     @id @default(nanoid())
   user      User       @relation(fields: [userId], references: [id])
-  userId    String     @unique // Each user has one cart
+  userId    String     @unique 
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   items     CartItem[]
 }
 
 model CartItem {
-  id        String   @id @default(nanoid())
-  cart      Cart     @relation(fields: [cartId], references: [id])
-  cartId    String
-  product   Product  @relation(fields: [productId], references: [id])
-  productId String
-  quantity  Int
-  addedAt   DateTime @default(now())
+  id          String    @id @default(nanoid())
+  cart        Cart      @relation(fields: [cartId], references: [id])
+  cartId      String
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  fragrance   Fragrance @relation(fields: [fragranceId], references: [id])
+  fragranceId String
+  quantity    Int
+  addedAt     DateTime  @default(now())
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productId, fragranceId])
 }
 
 model Order {
@@ -139,28 +141,43 @@ model Order {
 }
 
 model OrderItem {
-  id        String   @id @default(nanoid())
-  orderId   String
-  quantity  Int
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id          String    @id @default(nanoid())
+  orderId     String
+  quantity    Int
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  fragrance   Fragrance @relation(fields: [fragranceId], references: [id], onDelete: Restrict) // Link to Fragrance
+  fragranceId String
 }
 
 model UserFreeTrials {
-  id        String   @id @default(nanoid())
-  userId    String?
-  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
-  name      String?
-  phone     String?
-  address   String?
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String    @id @default(nanoid())
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Restrict)
+  name        String?
+  phone       String?
+  address     String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  fragrance   Fragrance @relation(fields: [fragranceId], references: [id], onDelete: Restrict) // Link to Fragrance
+  fragranceId String
 
   @@unique([productId])
+}
+
+model Fragrance {
+  id             String           @id @default(nanoid())
+  name           String 
+  stockQuantity  Int              @default(0) 
+  productId      String
+  product        Product          @relation(fields: [productId], references: [id])
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  userFreeTrials UserFreeTrials[]
 }

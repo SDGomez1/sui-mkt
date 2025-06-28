@@ -5,7 +5,13 @@ import { useAddProductToCart } from "@/lib/queries/cart.query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function QuantitySelector({ productId }: { productId: string }) {
+export default function QuantitySelector({
+  productId,
+  fragranceId,
+}: {
+  productId: string;
+  fragranceId: string;
+}) {
   const [quantity, setQuantity] = useState(1);
   const { mutateAsync } = useAddProductToCart();
   const router = useRouter();
@@ -40,6 +46,7 @@ export default function QuantitySelector({ productId }: { productId: string }) {
           const data = await mutateAsync({
             productId: productId,
             quantity: quantity,
+            fragranceId,
           });
           if (data.success) {
             router.push("/checkout");

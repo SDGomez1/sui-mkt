@@ -38,13 +38,17 @@ export const useCart = () => {
   });
 };
 
-const addProductToCartRequest = async (productId: string, quantity: number) => {
+const addProductToCartRequest = async (
+  productId: string,
+  quantity: number,
+  fragranceId: string,
+) => {
   const response = await fetch("/api/v1/cart/items", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ productId, quantity }),
+    body: JSON.stringify({ productId, quantity, fragranceId }),
     credentials: "include",
   });
 
@@ -54,8 +58,11 @@ const addProductToCartRequest = async (productId: string, quantity: number) => {
 export const useAddProductToCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (x: { productId: string; quantity: number }) =>
-      await addProductToCartRequest(x.productId, x.quantity),
+    mutationFn: async (x: {
+      productId: string;
+      quantity: number;
+      fragranceId: string;
+    }) => await addProductToCartRequest(x.productId, x.quantity, x.fragranceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       toast("Producto añadido con exito al carrito");

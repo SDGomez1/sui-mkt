@@ -10,6 +10,7 @@ export async function POST(req: NextRequest) {
   const addCartRequestSchema = z.object({
     productId: z.string(),
     quantity: z.number(),
+    fragranceId: z.string(),
   });
   try {
     const user = await auth.api.getSession({ headers: req.headers });
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
         context,
         filteredData.data.productId,
         filteredData.data.quantity,
+        filteredData.data.fragranceId,
       );
 
       return NextResponse.json({
@@ -48,6 +50,7 @@ export async function POST(req: NextRequest) {
         { type: "guest", id: user.user.id },
         filteredData.data.productId,
         filteredData.data.quantity,
+        filteredData.data.fragranceId,
       );
       return NextResponse.json({
         success: true,
@@ -69,6 +72,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const RequestSchema = z.object({
     productId: z.string(),
+    fragranceId: z.string(),
   });
   try {
     const user = await auth.api.getSession({ headers: req.headers });
@@ -105,6 +109,7 @@ export async function DELETE(req: NextRequest) {
       const data = await cartService.removeItemFromCart(
         { type: "guest", id: user.user.id },
         filteredData.data.productId,
+        filteredData.data.fragranceId,
       );
       return NextResponse.json({
         success: true,
@@ -128,6 +133,7 @@ export async function PUT(req: NextRequest) {
   const addCartRequestSchema = z.object({
     productId: z.string(),
     quantity: z.number(),
+    fragranceId: z.string(),
   });
   try {
     const user = await auth.api.getSession({ headers: req.headers });
@@ -154,6 +160,7 @@ export async function PUT(req: NextRequest) {
         context,
         filteredData.data.productId,
         filteredData.data.quantity,
+        filteredData.data.fragranceId,
       );
 
       return NextResponse.json({
@@ -166,6 +173,7 @@ export async function PUT(req: NextRequest) {
         { type: "guest", id: user.user.id },
         filteredData.data.productId,
         filteredData.data.quantity,
+        filteredData.data.fragranceId,
       );
       return NextResponse.json({
         success: true,

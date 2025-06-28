@@ -6,6 +6,7 @@ import {
 } from "@/backend/types/cart.types";
 import { productService } from "../product/product";
 import { guestCartService } from "./guestCart";
+import { fragranceService } from "../fragrance/fragrance";
 
 class CartService {
   formatCartData(
@@ -36,6 +37,7 @@ class CartService {
         items: {
           include: {
             product: true,
+            fragrance: true,
           },
         },
       },
@@ -47,6 +49,7 @@ class CartService {
           items: {
             include: {
               product: true,
+              fragrance: true,
             },
           },
         },
@@ -68,6 +71,8 @@ class CartService {
           quantity: dbItem.quantity,
           imageUrl: product.featuredImage,
           itemTotal: product.price.toNumber() * dbItem.quantity,
+          fraganceId: dbItem.fragranceId,
+          fraganceName: dbItem.fragrance.name,
         };
       });
 
@@ -84,35 +89,51 @@ class CartService {
     context: CartContext,
     productId: string,
     quantity: number,
+    fragranceId: string,
   ) {
     const userId = context.id;
+    const fragranceDetails =
+      await fragranceService.getFragranceById(fragranceId);
     const productDetails = await productService.getProductById(productId);
+
+    if (!fragranceDetails) {
+      throw new Error("fragrance not found");
+    }
+
+    if (fragranceDetails.productId !== productId) {
+      throw new Error("Fragrance does not belong to the specified product.");
+    }
 
     if (!productDetails) {
       throw new Error("Product not found");
     }
-    if (productDetails.stockQuantity < quantity) {
-      throw new Error("Not enough stock");
+    if (fragranceDetails.stockQuantity < quantity) {
+      throw new Error(`Not enough stock for fragance ${fragranceDetails.name}`);
     }
 
     const cart = await this.getCartbyUserId(userId);
 
     const existingItem = await prisma.cartItem.findUnique({
-      where: { cartId_productId: { cartId: cart.id, productId } },
+      where: {
+        cartId_productId_fragranceId: {
+          cartId: cart.id,
+          productId,
+          fragranceId,
+        },
+      },
     });
 
     if (existingItem) {
-      const productForStockCheck =
-        await productService.getProductById(productId);
-      if (
-        !productForStockCheck ||
-        productForStockCheck.stockQuantity < existingItem.quantity + quantity
-      ) {
+      const totalDesiredQuantity = existingItem.quantity + quantity;
+      if (fragranceDetails.stockQuantity < totalDesiredQuantity) {
+        throw new Error(
+          `Not enough stock for fragrance: ${fragranceDetails.name}. Available: ${fragranceDetails.stockQuantity}, current in cart: ${existingItem.quantity}, desired add: ${quantity}`,
+        );
       }
 
       await prisma.cartItem.update({
-        where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + quantity },
+        where: { id: existingItem.id }, // Update by ID of the specific cart item
+        data: { quantity: totalDesiredQuantity },
       });
     } else {
       await prisma.cartItem.create({
@@ -120,6 +141,7 @@ class CartService {
           cartId: cart.id,
           productId,
           quantity,
+          fragranceId,
         },
       });
     }
@@ -135,28 +157,39 @@ class CartService {
     context: CartContext,
     productId: string,
     quantity: number,
+    fragranceId: string,
   ) {
     if (quantity <= 0) {
-      return this.removeItemFromCart(context, productId);
+      return this.removeItemFromCart(context, productId, fragranceId);
     }
 
     const userId = context.id;
-    const productDetails = await productService.getProductById(productId);
 
-    if (!productDetails) {
-      throw new Error("Product not found for update");
-    }
-    if (productDetails.stockQuantity < quantity) {
-      throw new Error("Not enough stock for the new quantity");
-    }
+    const fragranceDetails =
+      await fragranceService.getFragranceById(fragranceId);
 
+    if (!fragranceDetails) {
+      throw new Error("Fragrance not found for update");
+    }
+    if (fragranceDetails.productId !== productId) {
+      throw new Error("Fragrance does not belong to the specified product.");
+    }
+    if (fragranceDetails.stockQuantity < quantity) {
+      throw new Error(
+        `Not enough stock for the new quantity of fragrance: ${fragranceDetails.name}. Available: ${fragranceDetails.stockQuantity}`,
+      );
+    }
     const cart = await prisma.cart.findUnique({ where: { userId } });
     if (!cart) {
       throw new Error("User cart not found. Cannot update item.");
     }
 
     const updatedItem = await prisma.cartItem.updateMany({
-      where: { cartId: cart.id, productId: productId },
+      where: {
+        cartId: cart.id,
+        productId: productId,
+        fragranceId: fragranceId,
+      },
       data: { quantity: quantity },
     });
 
@@ -172,7 +205,11 @@ class CartService {
     return newCart;
   }
 
-  async removeItemFromCart(context: CartContext, productId: string) {
+  async removeItemFromCart(
+    context: CartContext,
+    productId: string,
+    fragranceId: string,
+  ) {
     const userId = context.id;
     const cart = await prisma.cart.findUnique({ where: { userId } });
 
@@ -181,7 +218,7 @@ class CartService {
     }
 
     await prisma.cartItem.deleteMany({
-      where: { cartId: cart.id, productId },
+      where: { cartId: cart.id, productId, fragranceId: fragranceId },
     });
 
     const newCart = await prisma.cart.update({
@@ -224,18 +261,26 @@ class CartService {
         guestItem.productId,
       );
 
+      const fragranceDetails = await fragranceService.getFragranceById(
+        guestItem.fraganceId,
+      );
+
       if (!productDetails) {
         continue;
       }
+      if (!fragranceDetails) {
+        continue;
+      }
 
-      if (productDetails.stockQuantity < guestItem.quantity) {
+      if (fragranceDetails.stockQuantity < guestItem.quantity) {
         continue;
       }
       const existingUserCartItem = await prisma.cartItem.findUnique({
         where: {
-          cartId_productId: {
+          cartId_productId_fragranceId: {
             cartId: userCart.cartId,
             productId: guestItem.productId,
+            fragranceId: guestItem.fraganceId,
           },
         },
       });
@@ -243,9 +288,9 @@ class CartService {
       if (existingUserCartItem) {
         const totalDesiredQuantity =
           existingUserCartItem.quantity + guestItem.quantity;
-        if (productDetails.stockQuantity < totalDesiredQuantity) {
+        if (fragranceDetails.stockQuantity < totalDesiredQuantity) {
           const quantityToAdd =
-            productDetails.stockQuantity - existingUserCartItem.quantity;
+            fragranceDetails.stockQuantity - existingUserCartItem.quantity;
           if (quantityToAdd > 0) {
             await prisma.cartItem.update({
               where: { id: existingUserCartItem.id },
@@ -266,6 +311,7 @@ class CartService {
             cartId: userCart.cartId,
             productId: guestItem.productId,
             quantity: guestItem.quantity,
+            fragranceId: guestItem.fraganceId,
           },
         });
         userCartWasModified = true;

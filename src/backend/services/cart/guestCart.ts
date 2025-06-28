@@ -5,6 +5,7 @@ import {
 } from "@/backend/types/cart.types";
 import { redis } from "@/backend/db/redis/redis";
 import { productService } from "../product/product";
+import { fragranceService } from "../fragrance/fragrance";
 
 class GuestCartService {
   private GUEST_CART_EXPIRY_SECONDS = 24 * 60 * 60 * 14;
@@ -76,12 +77,19 @@ class GuestCartService {
     context: CartContext,
     productId: string,
     quantity: number,
+    fragranceId: string,
   ) {
+    const fragranceDetails =
+      await fragranceService.getFragranceById(fragranceId);
     const productDetails = await productService.getProductById(productId);
+
+    if (!fragranceDetails) {
+      throw new Error("fragrance not found");
+    }
     if (!productDetails) {
       throw new Error("Product not found");
     }
-    if (productDetails.stockQuantity < quantity) {
+    if (fragranceDetails.stockQuantity < quantity) {
       throw new Error("not enough stock");
     }
 
@@ -103,6 +111,8 @@ class GuestCartService {
         price: currentPrice,
         name: productDetails.name,
         imageUrl: productDetails.featuredImage,
+        fraganceId: fragranceDetails.id,
+        fraganceName: fragranceDetails.name,
       });
     }
     await this.saveCartStorage(context.id, guestCartStore);
@@ -126,15 +136,21 @@ class GuestCartService {
     context: CartContext,
     productId: string,
     quantity: number,
+    fraganceId: string,
   ) {
     if (quantity <= 0) {
       return this.removeItemFromCart(context, productId); // Or throw error
     }
     const productDetails = await productService.getProductById(productId);
+    const fragranceDetails =
+      await fragranceService.getFragranceById(fraganceId);
+    if (!fragranceDetails) {
+      throw new Error("Fragance not found");
+    }
     if (!productDetails) {
       throw new Error("Product not found for update");
     }
-    if (productDetails.stockQuantity < quantity) {
+    if (fragranceDetails.stockQuantity < quantity) {
       throw new Error("Not enough stock for updated quantity");
     }
 
