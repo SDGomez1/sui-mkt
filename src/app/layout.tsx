@@ -72,6 +72,23 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "rgeothn41v");`,
               }}
             />
+<Script
+              id="google"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17332073085"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-17332073085');
+</script>
+           `,
+              }}
+            />
+
             <noscript>
               <img
                 height="1"
