@@ -10,7 +10,13 @@ import dinamicaImage from "@/assets/landings/oracion/dinamica.png";
 import guiaImage from "@/assets/landings/oracion/guia.png";
 import improvisadaImage from "@/assets/landings/oracion/improvisada.png";
 import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
   ctaLabel,
   faqItems,
@@ -50,12 +56,12 @@ const carouselSlides = [
   {
     src: carouselTwo,
     alt: "Testimonio de vida restaurada 2",
-    title: "Volví a conectar con paz y constancia diaria",
+    title: "Un balsamo para el corazón",
   },
   {
     src: carouselThree,
     alt: "Testimonio de vida restaurada 3",
-    title: "Una guía práctica para orar sin miedo",
+    title: "Herramienta para conectar",
   },
 ] as const;
 const includedImages = [guiaImage, dinamicaImage, improvisadaImage] as const;
@@ -66,18 +72,33 @@ export default function OracionLandingPage() {
       <OracionLandingTracker />
 
       <div className="border-b border-[#585ca6]/10 bg-white/95 backdrop-blur-sm">
-        <div className={cn(sectionWidth, "flex min-h-16 items-center justify-center")}>
+        <div
+          className={cn(
+            sectionWidth,
+            "flex min-h-16 items-center justify-center",
+          )}
+        >
           <TextLogo className="h-8 w-auto sm:h-9" />
         </div>
       </div>
 
-      <section className={cn(brandLavender, "bg-[linear-gradient(180deg,#ecebff_0%,#dfdef7_100%)] py-14 sm:py-16")}>
+      <section
+        className={cn(
+          brandLavender,
+          "bg-[linear-gradient(180deg,#ecebff_0%,#dfdef7_100%)] py-14 sm:py-16",
+        )}
+      >
         <div className={cn(sectionWidth, "text-center")}>
           <header className="mx-auto max-w-3xl">
             <h1 className="text-4xl font-bold tracking-[-0.03em] sm:text-5xl">
               {heroCopy.title}
             </h1>
-            <p className={cn("mx-auto mt-5 max-w-3xl text-lg leading-8 sm:text-[1.65rem] sm:leading-[2.2rem]", mutedInk)}>
+            <p
+              className={cn(
+                "mx-auto mt-5 max-w-3xl text-lg leading-8 sm:text-[1.65rem] sm:leading-[2.2rem]",
+                mutedInk,
+              )}
+            >
               {heroCopy.description}
             </p>
           </header>
@@ -86,7 +107,12 @@ export default function OracionLandingPage() {
             <OracionHeroVideo />
           </div>
 
-          <p className={cn("mx-auto mt-6 max-w-2xl text-sm leading-6 sm:text-base", mutedInk)}>
+          <p
+            className={cn(
+              "mx-auto mt-6 max-w-2xl text-sm leading-6 sm:text-base",
+              mutedInk,
+            )}
+          >
             {heroCopy.caption}
           </p>
 
@@ -102,11 +128,13 @@ export default function OracionLandingPage() {
       <section className="bg-white py-16 sm:py-20">
         <div className={cn(sectionWidth, "relative")}>
           <div className="mx-auto max-w-4xl text-center">
-           <h2 className="text-3xl font-bold sm:text-[2.2rem]">
+            <h2 className="text-3xl font-bold sm:text-[2.2rem]">
               {testimonialCopy.title}
             </h2>
-            <p className={cn("mt-3 text-lg italic", mutedInk)}>{testimonialCopy.subtitle}</p>
-         </div>
+            <p className={cn("mt-3 text-lg italic", mutedInk)}>
+              {testimonialCopy.subtitle}
+            </p>
+          </div>
 
           <div className="mx-auto mt-8 max-w-4xl">
             <div className="space-y-6 sm:hidden">
@@ -148,16 +176,10 @@ export default function OracionLandingPage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious
-                className="left-0 top-1/2 hidden -translate-x-1/2 border-[#585ca6]/30 bg-white text-[#585ca6] shadow-[0_10px_20px_-12px_rgba(88,92,166,0.4)] lg:flex"
-              />
-              <CarouselNext
-                className="right-0 top-1/2 hidden translate-x-1/2 border-[#585ca6]/30 bg-white text-[#585ca6] shadow-[0_10px_20px_-12px_rgba(88,92,166,0.4)] lg:flex"
-              />
+              <CarouselPrevious className="left-0 top-1/2 hidden -translate-x-1/2 border-[#585ca6]/30 bg-white text-[#585ca6] shadow-[0_10px_20px_-12px_rgba(88,92,166,0.4)] lg:flex" />
+              <CarouselNext className="right-0 top-1/2 hidden translate-x-1/2 border-[#585ca6]/30 bg-white text-[#585ca6] shadow-[0_10px_20px_-12px_rgba(88,92,166,0.4)] lg:flex" />
             </Carousel>
           </div>
-
-
         </div>
       </section>
 
@@ -190,14 +212,19 @@ export default function OracionLandingPage() {
             <h2 className="text-3xl font-bold tracking-[-0.03em] sm:text-[2.35rem]">
               Por fin siente la presencia de Dios en tu vida diaria.
             </h2>
-            <p className="mt-5 text-lg font-semibold text-[#585ca6]">El curso incluye:</p>
+            <p className="mt-5 text-lg font-semibold text-[#585ca6]">
+              El curso incluye:
+            </p>
           </div>
 
           <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-7">
             {includedItems.map((item, index) => (
               <Card
                 key={item.title}
-                className={cn("border bg-white/70 shadow-[0_22px_44px_-36px_rgba(88,92,166,0.35)] backdrop-blur-sm", brandStroke)}
+                className={cn(
+                  "border bg-white/70 shadow-[0_22px_44px_-36px_rgba(88,92,166,0.35)] backdrop-blur-sm",
+                  brandStroke,
+                )}
               >
                 <CardContent className="px-2 pb-5 pt-2">
                   <div className="overflow-hidden rounded-lg border border-[#585ca6]/10 bg-white">
@@ -248,7 +275,10 @@ export default function OracionLandingPage() {
           <OracionCtaButton
             href={ctaHref}
             label={ctaLabel}
-            className={cn(ctaClassName, "mt-10 min-w-[156px] px-6 py-3.5 leading-5")}
+            className={cn(
+              ctaClassName,
+              "mt-10 min-w-[156px] px-6 py-3.5 leading-5",
+            )}
             location="final_cta"
           >
             Quiero estar cerca de

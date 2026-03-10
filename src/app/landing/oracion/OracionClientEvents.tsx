@@ -23,6 +23,10 @@ export function trackOracionVideoPlay() {
   posthog.capture("oracion_hero_video_played", { page: "oracion_landing" });
 }
 
+export function trackOracionVideoUnmuted() {
+  posthog.capture("oracion_hero_video_unmuted", { page: "oracion_landing" });
+}
+
 export function trackFaqItemOpened(question: string) {
   posthog.capture("faq_item_opened", {
     question,
