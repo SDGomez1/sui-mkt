@@ -11,12 +11,7 @@ export const heroCopy = {
 export const testimonialCopy = {
   title: "Vidas restauradas",
   subtitle: '"Una herramienta en medio de la dificultad"',
-  paragraphs: [
-    "Agradezco mucho lo que haces, la verdad la guía la he revisado en los momentos en los que me siento peor y me ha ayudado bastante, ha sido como una herramienta de rescate para mí. No soy alguien que sepa orar o por lo menos no me considero así, y conecté mucho con el día 2 de la guía donde hablas de poner música, tener nuestra biblia favorita porque es algo muy diferente a lo que me habían enseñado que era orar. Y me gusta bastante esta nueva opción.",
-    "Espero conectar (reconectar) con Dios, si es posible, ya sabes, es esa búsqueda interna, cansable muchas veces pero alcanzable espero yo.",
-    "Muchas gracias, en verdad.",
-    "Y disculpa si en el fondo no era la respuesta que buscabas",
-  ],
+  summary: "Una guía que rescata y reconecta con Dios.",
 } as const;
 
 export const problemBullets = [
@@ -40,18 +35,21 @@ export const includedItems = [
     description:
       "Si te sientes desconectado de Dios, esta guías te ayudarán a confrontar lo que aleja, decidir volver y reconstruir una relación viva con Él.",
     variant: "guide",
+    imageAlt: "Guía de trabajo del curso",
   },
   {
     title: "#2 DINAMICAS PARA SANAR",
     description:
       "Un proceso práctico para confrontar heridas espirituales, romper patrones invisibles y reconstruir tu relación con Dios desde la raíz.",
     variant: "journal",
+    imageAlt: "Dinámicas para sanar",
   },
   {
     title: "#3 DEJAR LA ORACIÓN IMPROVISADA",
     description:
       "Deja atrás la oración improvisada que no te satisface y aprende a construir momentos intencionales que fortalezcan tu relación con Dios.",
     variant: "prayer",
+    imageAlt: "Dejar la oración improvisada",
   },
 ] as const;
 

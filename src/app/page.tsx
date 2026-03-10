@@ -1,8 +1,11 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckIcon, Sparkles } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import Image from "next/image";
+import posthog from "posthog-js";
 import audio from "@/assets/img/audio.jpeg";
 import oraciones from "@/assets/img/oraciones.jpeg";
 import tarjetas from "@/assets/img/cards.jpeg";
@@ -35,7 +38,9 @@ export default function LandingPage() {
           controls
           className="w-[80vw] lg:[w-60vw]"
         ></video>
-        <Button className="text-3xl font-semibold text-center  bg-white text-primary py-8 px-8">
+        <Button
+          className="text-3xl font-semibold text-center  bg-white text-primary py-8 px-8"
+        >
           Estoy lista
         </Button>
       </header>
@@ -118,7 +123,9 @@ export default function LandingPage() {
             Solo estás buscando maneras de conectar con Él, sin tener en cuenta
             tu estilo de vida.
           </p>
-          <Button className="text-3xl font-semibold text-center  bg-primary text-white py-8 px-8">
+          <Button
+            className="text-3xl font-semibold text-center  bg-primary text-white py-8 px-8"
+          >
             Estoy lista
           </Button>
 
@@ -147,7 +154,9 @@ export default function LandingPage() {
           ¡El secreto no es amoldar a Dios a tu vida, sino tu vida a Él!
         </p>
 
-        <Button className="text-3xl font-semibold text-center  bg-white text-primary py-8 px-8">
+        <Button
+          className="text-3xl font-semibold text-center  bg-white text-primary py-8 px-8"
+        >
           Estoy lista
         </Button>
 
@@ -177,7 +186,9 @@ export default function LandingPage() {
             </CardContent>
           </Card>
         </div>
-        <Button className="text-3xl font-semibold text-center  bg-white text-primary py-8 px-8 mt-6">
+        <Button
+          className="text-3xl font-semibold text-center  bg-white text-primary py-8 px-8 mt-6"
+        >
           Estoy lista
         </Button>
       </section>
