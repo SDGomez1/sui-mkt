@@ -51,7 +51,7 @@ export const PrayerGuideEmail = ({
           <Section style={buttonContainer}>
             <Link
               style={button}
-              href={`https://suivelas.com/catalogo?utm_source=email&utm_medium=paid&utm_campaign=guia_oracion_bienvenida&utm_content=boton_descarga&email=${email}`}
+              href={`https://suivelas.com/guiaOracion?utm_source=email&utm_medium=paid&utm_campaign=guia_oracion_bienvenida&utm_content=boton_descarga&email=${email}`}
             >
               Descargar Guía de oración
             </Link>

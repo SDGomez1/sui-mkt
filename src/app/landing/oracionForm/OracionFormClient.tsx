@@ -83,11 +83,17 @@ const formSchema = z.object({
     .min(5, "Ingresa un número válido.")
     .regex(/^[0-9]+$/, "Solo números."),
   prayerFrequency: z.string().min(1, "Selecciona una opción."),
-  isChristian: z.enum(["si", "no"], {
-    required_error: "Selecciona una opción.",
-  }),
+  isChristian: z.enum(["si", "no"]).optional(),
   prayerDifficulty: z.string().min(1, "Selecciona una opción."),
   prayerGoal: z.string().min(1, "Selecciona una opción."),
+}).superRefine((value, context) => {
+  if (!value.isChristian) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Selecciona una opción.",
+      path: ["isChristian"],
+    });
+  }
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -116,7 +122,7 @@ export function OracionFormClient() {
       countryCode: "+57",
       phone: "",
       prayerFrequency: "",
-      isChristian: "",
+      isChristian: undefined,
       prayerDifficulty: "",
       prayerGoal: "",
     },
