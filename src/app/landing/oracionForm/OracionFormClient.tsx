@@ -64,37 +64,42 @@ const prayerGoalOptions = [
   { value: "Tener dirección", label: "Tener dirección" },
   { value: "dejar de sentirme sola(o)", label: "dejar de sentirme sola(o)" },
   { value: "sentir que Dios me escucha", label: "sentir que Dios me escucha" },
-  { value: "aprender a soltar mis cargas", label: "aprender a soltar mis cargas" },
+  {
+    value: "aprender a soltar mis cargas",
+    label: "aprender a soltar mis cargas",
+  },
   {
     value: "volver a orar sin sentir culpa",
     label: "volver a orar sin sentir culpa",
   },
 ] as const;
 
-const formSchema = z.object({
-  firstName: z.string().min(1, "Ingresa tu nombre."),
-  lastName: z.string().min(1, "Ingresa tus apellidos."),
-  email: z.string().email("Ingresa un email válido."),
-  countryCode: z.enum(["+52", "+57"], {
-    required_error: "Selecciona un código de país.",
-  }),
-  phone: z
-    .string()
-    .min(5, "Ingresa un número válido.")
-    .regex(/^[0-9]+$/, "Solo números."),
-  prayerFrequency: z.string().min(1, "Selecciona una opción."),
-  isChristian: z.enum(["si", "no"]).optional(),
-  prayerDifficulty: z.string().min(1, "Selecciona una opción."),
-  prayerGoal: z.string().min(1, "Selecciona una opción."),
-}).superRefine((value, context) => {
-  if (!value.isChristian) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Selecciona una opción.",
-      path: ["isChristian"],
-    });
-  }
-});
+const formSchema = z
+  .object({
+    firstName: z.string().min(1, "Ingresa tu nombre."),
+    lastName: z.string().min(1, "Ingresa tus apellidos."),
+    email: z.string().email("Ingresa un email válido."),
+    countryCode: z.enum(["+52", "+57"], {
+      required_error: "Selecciona un código de país.",
+    }),
+    phone: z
+      .string()
+      .min(5, "Ingresa un número válido.")
+      .regex(/^[0-9]+$/, "Solo números."),
+    prayerFrequency: z.string().min(1, "Selecciona una opción."),
+    isChristian: z.enum(["si", "no"]).optional(),
+    prayerDifficulty: z.string().min(1, "Selecciona una opción."),
+    prayerGoal: z.string().min(1, "Selecciona una opción."),
+  })
+  .superRefine((value, context) => {
+    if (!value.isChristian) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Selecciona una opción.",
+        path: ["isChristian"],
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -179,6 +184,9 @@ export function OracionFormClient() {
         <p className="mt-4 text-base font-semibold text-[#2a2e53] sm:text-lg">
           ¡Todo listo! Tu guía de oración ya fue enviada a tu correo.
         </p>
+        <p className="mt-3 text-sm text-[#2a2e53]">
+          Revisa tu carpeta de spam si no ves el correo.
+        </p>
         <p className="mt-16 text-base text-[#2a2e53] sm:text-lg">
           Descárgala para comenzar tu tiempo con Dios hoy.
         </p>
@@ -189,7 +197,9 @@ export function OracionFormClient() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card className={cn("w-full max-w-2xl border-0 bg-white/90 shadow-none")}>
+        <Card
+          className={cn("w-full max-w-2xl border-0 bg-white/90 shadow-none")}
+        >
           <div className="space-y-8 px-6 sm:px-8">
             <div className="rounded-2xl bg-white p-6 sm:p-8">
               <div className="text-center">
@@ -346,7 +356,10 @@ export function OracionFormClient() {
                                     {getSelectedLabel(
                                       [
                                         { value: "+52", label: "México (+52)" },
-                                        { value: "+57", label: "Colombia (+57)" },
+                                        {
+                                          value: "+57",
+                                          label: "Colombia (+57)",
+                                        },
                                       ],
                                       field.value,
                                       "Selecciona una opción",

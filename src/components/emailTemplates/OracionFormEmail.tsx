@@ -129,7 +129,12 @@ export const PrayerGuideEmail = ({
             <strong>tomar un screenshot y etiquetarnos</strong> en redes
             sociales. Ayudamos a las personas a crecer con Dios.
           </Text>
-     
+          <Link
+            style={footerText}
+            href={`https://suivelas.com/politica_privacidad.pdf`}
+          >
+            Política de privacidad
+          </Link>
         </Section>
       </Container>
     </Body>
