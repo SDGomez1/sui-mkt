@@ -29,7 +29,13 @@ export const PrayerGuideEmail = ({
       <Container style={container}>
         {/* Logo Section based on Sui Brand */}
         <Section style={logoContainer}>
-          <Text style={logoText}>Sui</Text>
+          <Img
+            src="https://suivelas.com/text-logo.svg"
+            alt="Sui"
+            width="120"
+            height="60"
+            style={logoImage}
+          />
         </Section>
 
         <Section style={content}>
@@ -151,11 +157,9 @@ const logoContainer = {
   padding: "20px 0",
 };
 
-const logoText = {
-  fontSize: "32px",
-  fontWeight: "bold",
-  color: "#5e6ebf", // Dark blue/purple from the logo in PDF
-  margin: "0",
+const logoImage = {
+  display: "block",
+  margin: "0 auto",
 };
 
 const content = {
@@ -258,7 +262,7 @@ const footer = {
 const footerText = {
   fontSize: "14px",
   lineHeight: "22px",
-  color: "#8898aa",
+  color: "#000",
 };
 
 const unsubscribe = {
