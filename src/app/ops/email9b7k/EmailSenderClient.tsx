@@ -1,6 +1,8 @@
 "use client";
 
 import { useDeferredValue, useEffect, useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,9 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 type EmailSenderClientProps = {
   initialHtml: string;
 };
-
-const AUTH_USERNAME = "sui-admin";
-const AUTH_PASSWORD = "sui-2026";
 
 export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   const [to, setTo] = useState("");
@@ -23,10 +22,13 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   const [message, setMessage] = useState("");
   const [loginUser, setLoginUser] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [loginStatus, setLoginStatus] = useState<"idle" | "error">("idle");
+  const [loginStatus, setLoginStatus] = useState<
+    "idle" | "loading" | "error"
+  >("idle");
   const [loginMessage, setLoginMessage] = useState("");
   const [isAuthed, setIsAuthed] = useState(false);
   const previewHtml = useDeferredValue(html);
+  const verifyLogin = useMutation(api.adminLogin.verify);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -93,21 +95,32 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
     }
   };
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoginMessage("");
-    const isValid =
-      loginUser.trim() === AUTH_USERNAME &&
-      loginPassword === AUTH_PASSWORD;
+    setLoginStatus("loading");
 
-    if (!isValid) {
+    try {
+      const isValid = await verifyLogin({
+        username: loginUser.trim(),
+        password: loginPassword,
+      });
+
+      if (!isValid) {
+        setLoginStatus("error");
+        setLoginMessage("Credenciales invalidas.");
+        return;
+      }
+
+      setIsAuthed(true);
+      setLoginStatus("idle");
+    } catch (error) {
+      console.error(error);
       setLoginStatus("error");
-      setLoginMessage("Credenciales invalidas.");
-      return;
+      setLoginMessage(
+        error instanceof Error ? error.message : "Error autenticando.",
+      );
     }
-
-    setIsAuthed(true);
-    setLoginStatus("idle");
   };
 
   if (!isAuthed) {
@@ -149,7 +162,9 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <Button type="submit">Entrar</Button>
+          <Button type="submit" disabled={loginStatus === "loading"}>
+            {loginStatus === "loading" ? "Verificando..." : "Entrar"}
+          </Button>
           {loginMessage ? (
             <p className="text-sm text-red-600">{loginMessage}</p>
           ) : null}

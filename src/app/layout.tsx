@@ -3,6 +3,7 @@ import { Lora, Open_Sans, Poppins, Questrial } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Script from "next/script";
+import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const questrial = Questrial({
   weight: "400",
@@ -82,8 +83,10 @@ export default function RootLayout({
           antialiased
         `}
       >
-        <Toaster />
-        {children}
+        <ConvexClientProvider>
+          <Toaster />
+          {children}
+        </ConvexClientProvider>
       </body>
     </html>
   );
