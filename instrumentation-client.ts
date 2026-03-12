@@ -3,6 +3,7 @@ import posthog from "posthog-js";
 posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
   api_host: "https://api.suivelas.com",
   defaults: "2026-01-30",
+  disable_session_recording:false,
 });
 
 // IMPORTANT: Never combine this approach with other client-side PostHog initialization approaches,
