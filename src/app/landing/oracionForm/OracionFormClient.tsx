@@ -55,6 +55,7 @@ const prayerDifficultyOptions = [
   { value: "no tengo tiempo", label: "no tengo tiempo" },
   { value: "siento que Dios está lejos", label: "siento que Dios está lejos" },
   { value: "siento culpa", label: "siento culpa" },
+  { value: "other", label: "Otro" },
 ] as const;
 
 const prayerGoalOptions = [
@@ -72,6 +73,7 @@ const prayerGoalOptions = [
     value: "volver a orar sin sentir culpa",
     label: "volver a orar sin sentir culpa",
   },
+  { value: "other", label: "Otro" },
 ] as const;
 
 const formSchema = z
@@ -90,6 +92,8 @@ const formSchema = z
     isChristian: z.enum(["si", "no"]).optional(),
     prayerDifficulty: z.string().min(1, "Selecciona una opción."),
     prayerGoal: z.string().min(1, "Selecciona una opción."),
+    prayerDifficultyOther: z.string().optional(),
+    prayerGoalOther: z.string().optional(),
   })
   .superRefine((value, context) => {
     if (!value.isChristian) {
@@ -97,6 +101,26 @@ const formSchema = z
         code: z.ZodIssueCode.custom,
         message: "Selecciona una opción.",
         path: ["isChristian"],
+      });
+    }
+    if (
+      value.prayerDifficulty === "other" &&
+      (!value.prayerDifficultyOther || value.prayerDifficultyOther.length < 5)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Especifica al menos 5 caracteres.",
+        path: ["prayerDifficultyOther"],
+      });
+    }
+    if (
+      value.prayerGoal === "other" &&
+      (!value.prayerGoalOther || value.prayerGoalOther.length < 5)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Especifica al menos 5 caracteres.",
+        path: ["prayerGoalOther"],
       });
     }
   });
@@ -130,6 +154,8 @@ export function OracionFormClient() {
       isChristian: undefined,
       prayerDifficulty: "",
       prayerGoal: "",
+      prayerDifficultyOther: "",
+      prayerGoalOther: "",
     },
     mode: "onTouched",
   });
@@ -570,6 +596,27 @@ export function OracionFormClient() {
                           </FormItem>
                         )}
                       />
+                      {form.watch("prayerDifficulty") === "other" && (
+                        <FormField
+                          control={form.control}
+                          name="prayerDifficultyOther"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-semibold text-[#2a2e53]">
+                                Otro
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Especifica aquí"
+                                  {...field}
+                                  className="mt-2 h-12 rounded-xl border-transparent bg-[#f1f0fb] text-sm font-semibold text-[#2a2e53] placeholder:text-[#8b8b8b] focus-visible:ring-[#585ca6]"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
 
                       <FormField
                         control={form.control}
@@ -615,6 +662,27 @@ export function OracionFormClient() {
                           </FormItem>
                         )}
                       />
+                      {form.watch("prayerGoal") === "other" && (
+                        <FormField
+                          control={form.control}
+                          name="prayerGoalOther"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-semibold text-[#2a2e53]">
+                                Otro
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Especifica aquí"
+                                  {...field}
+                                  className="mt-2 h-12 rounded-xl border-transparent bg-[#f1f0fb] text-sm font-semibold text-[#2a2e53] placeholder:text-[#8b8b8b] focus-visible:ring-[#585ca6]"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     </div>
 
                     <div className="mt-6">
