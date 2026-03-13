@@ -28,18 +28,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, error } = await resend.emails.send({
+    const emailPayload = {
       from: "Sui <crecimiento@suivelas.com>",
-      to: validatedRecipients,
       subject: payload.subject,
       html: payload.html,
-    });
+    };
+
+    const { data, error } =
+      validatedRecipients.length > 1
+        ? await resend.batch.send(
+            validatedRecipients.map((recipient) => ({
+              ...emailPayload,
+              to: recipient,
+            })),
+          )
+        : await resend.emails.send({
+            ...emailPayload,
+            to: validatedRecipients,
+          });
 
     if (error) {
       return Response.json({ error }, { status: 500 });
     }
 
-    return Response.json({ ok: true, id: data?.id ?? null });
+    const ids =
+      validatedRecipients.length > 1 && data && "data" in data
+        ? data.data.map((item) => item.id)
+        : data && "id" in data
+          ? [data.id]
+          : [];
+
+    return Response.json({
+      ok: true,
+      id: ids[0] ?? null,
+      ids: ids.length > 1 ? ids : undefined,
+    });
   } catch (error) {
     const message =
       error instanceof z.ZodError
