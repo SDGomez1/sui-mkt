@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+﻿import { Resend } from "resend";
 import { z } from "zod";
 import PrayerGuideEmail from "@/components/emailTemplates/OracionFormEmail";
 
@@ -14,6 +14,8 @@ const payloadSchema = z.object({
   isChristian: z.enum(["si", "no"]),
   prayerDifficulty: z.string().min(1),
   prayerGoal: z.string().min(1),
+  prayerDifficultyOther: z.string().optional(),
+  prayerGoalOther: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -21,15 +23,28 @@ export async function POST(request: Request) {
     const body = await request.json();
     const payload = payloadSchema.parse(body);
 
+    const prayerDifficulty =
+      payload.prayerDifficulty === "other"
+        ? payload.prayerDifficultyOther?.trim()
+          ? `Otro: ${payload.prayerDifficultyOther.trim()}`
+          : "Otro"
+        : payload.prayerDifficulty;
+    const prayerGoal =
+      payload.prayerGoal === "other"
+        ? payload.prayerGoalOther?.trim()
+          ? `Otro: ${payload.prayerGoalOther.trim()}`
+          : "Otro"
+        : payload.prayerGoal;
+
     const adminHtml = `
-      <h2>Nuevo registro en landing de oración</h2>
+      <h2>Nuevo registro en landing de oraciÃ³n</h2>
       <p><strong>Nombre:</strong> ${payload.firstName} ${payload.lastName}</p>
       <p><strong>Email:</strong> ${payload.email}</p>
-      <p><strong>Teléfono:</strong> ${payload.countryCode} ${payload.phone}</p>
-      <p><strong>Veces que oras en el día:</strong> ${payload.prayerFrequency}</p>
-      <p><strong>¿Eres cristiana(o)?:</strong> ${payload.isChristian}</p>
-      <p><strong>¿Qué es lo que más te cuesta al orar?:</strong> ${payload.prayerDifficulty}</p>
-      <p><strong>¿Qué quieres lograr en tu relación con Dios?:</strong> ${payload.prayerGoal}</p>
+      <p><strong>TelÃ©fono:</strong> ${payload.countryCode} ${payload.phone}</p>
+      <p><strong>Veces que oras en el dÃ­a:</strong> ${payload.prayerFrequency}</p>
+      <p><strong>Â¿Eres cristiana(o)?:</strong> ${payload.isChristian}</p>
+      <p><strong>Â¿QuÃ© es lo que mÃ¡s te cuesta al orar?:</strong> ${prayerDifficulty}</p>
+      <p><strong>Â¿QuÃ© quieres lograr en tu relaciÃ³n con Dios?:</strong> ${prayerGoal}</p>
     `;
 
     const [adminResponse, userResponse] = await Promise.all([
@@ -42,7 +57,7 @@ export async function POST(request: Request) {
       resend.emails.send({
         from: "Sui <guias@suivelas.com>",
         to: [payload.email],
-        subject: "Tu guía de oración ya está aquí 💜",
+        subject: "Tu guÃ­a de oraciÃ³n ya estÃ¡ aquÃ­ ðŸ’œ",
         react: PrayerGuideEmail({
           userName: payload.firstName,
           email: payload.email,
@@ -62,3 +77,4 @@ export async function POST(request: Request) {
     return Response.json({ error }, { status: 500 });
   }
 }
+
