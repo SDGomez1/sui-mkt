@@ -6,6 +6,7 @@ import { Check, ChevronDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { usePostHog } from "posthog-js/react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -53,7 +54,10 @@ const prayerDifficultyOptions = [
   { value: "la constancia", label: "la constancia" },
   { value: "no saber que decir", label: "no saber que decir" },
   { value: "no tengo tiempo", label: "no tengo tiempo" },
-  { value: "siento que Dios está lejos", label: "siento que Dios está lejos" },
+  {
+    value: "siento que Dios está lejos",
+    label: "siento que Dios está lejos",
+  },
   { value: "siento culpa", label: "siento culpa" },
   { value: "other", label: "Otro" },
 ] as const;
@@ -64,7 +68,10 @@ const prayerGoalOptions = [
   { value: "ser constante en oración", label: "ser constante en oración" },
   { value: "Tener dirección", label: "Tener dirección" },
   { value: "dejar de sentirme sola(o)", label: "dejar de sentirme sola(o)" },
-  { value: "sentir que Dios me escucha", label: "sentir que Dios me escucha" },
+  {
+    value: "sentir que Dios me escucha",
+    label: "sentir que Dios me escucha",
+  },
   {
     value: "aprender a soltar mis cargas",
     label: "aprender a soltar mis cargas",
@@ -103,6 +110,7 @@ const formSchema = z
         path: ["isChristian"],
       });
     }
+
     if (
       value.prayerDifficulty === "other" &&
       (!value.prayerDifficultyOther || value.prayerDifficultyOther.length < 5)
@@ -113,6 +121,7 @@ const formSchema = z
         path: ["prayerDifficultyOther"],
       });
     }
+
     if (
       value.prayerGoal === "other" &&
       (!value.prayerGoalOther || value.prayerGoalOther.length < 5)
@@ -142,6 +151,8 @@ const disclaimerText =
 export function OracionFormClient() {
   const [step, setStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const posthog = usePostHog();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -167,12 +178,14 @@ export function OracionFormClient() {
       setStep(2);
       return;
     }
+
     if (step === 2) {
       const valid = await form.trigger(["email"]);
       if (!valid) return;
       setStep(3);
       return;
     }
+
     if (step === 3) {
       const valid = await form.trigger(["countryCode", "phone"]);
       if (!valid) return;
@@ -186,6 +199,29 @@ export function OracionFormClient() {
 
   const onSubmit = async (values: FormValues) => {
     try {
+      const normalizedEmail = values.email.trim().toLowerCase();
+      const firstName = values.firstName.trim();
+      const lastName = values.lastName.trim();
+
+      posthog?.identify(normalizedEmail, {
+        email: normalizedEmail,
+        first_name: firstName,
+        last_name: lastName,
+        name: `${firstName} ${lastName}`.trim(),
+        country_code: values.countryCode,
+        phone: values.phone,
+        prayer_frequency: values.prayerFrequency,
+        is_christian: values.isChristian,
+        prayer_difficulty:
+          values.prayerDifficulty === "other"
+            ? values.prayerDifficultyOther
+            : values.prayerDifficulty,
+        prayer_goal:
+          values.prayerGoal === "other"
+            ? values.prayerGoalOther
+            : values.prayerGoal,
+      });
+
       const response = await fetch("/api/oracionForm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,6 +231,7 @@ export function OracionFormClient() {
       if (!response.ok) {
         throw new Error("Error enviando el formulario");
       }
+
       setIsSubmitted(true);
     } catch (error) {
       console.error(error);
@@ -283,6 +320,7 @@ export function OracionFormClient() {
                           </FormItem>
                         )}
                       />
+
                       <FormField
                         control={form.control}
                         name="lastName"
@@ -318,6 +356,7 @@ export function OracionFormClient() {
                     <h3 className="text-lg font-semibold text-[#1c2043]">
                       ¿A cuál email deberiamos enviarla?
                     </h3>
+
                     <div className="mt-4">
                       <FormField
                         control={form.control}
@@ -337,6 +376,7 @@ export function OracionFormClient() {
                         )}
                       />
                     </div>
+
                     <div className="mt-6">
                       <Button
                         type="button"
@@ -346,6 +386,7 @@ export function OracionFormClient() {
                         Continuar
                       </Button>
                     </div>
+
                     <div className="mt-4 flex justify-center">
                       <button
                         type="button"
@@ -363,6 +404,7 @@ export function OracionFormClient() {
                     <h3 className="text-lg font-semibold text-[#1c2043]">
                       ¿Cuál es tu numero de celular?
                     </h3>
+
                     <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                       <FormField
                         control={form.control}
@@ -372,6 +414,7 @@ export function OracionFormClient() {
                             <FormLabel className="text-xs font-semibold text-[#6b6f97]">
                               Código país
                             </FormLabel>
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <FormControl>
@@ -394,6 +437,7 @@ export function OracionFormClient() {
                                   </Button>
                                 </FormControl>
                               </DropdownMenuTrigger>
+
                               <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] border-[#d0cfe6] bg-white">
                                 <DropdownMenuRadioGroup
                                   value={field.value}
@@ -408,10 +452,12 @@ export function OracionFormClient() {
                                 </DropdownMenuRadioGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+
                       <FormField
                         control={form.control}
                         name="phone"
@@ -433,6 +479,7 @@ export function OracionFormClient() {
                         )}
                       />
                     </div>
+
                     <div className="mt-6">
                       <Button
                         type="button"
@@ -442,6 +489,7 @@ export function OracionFormClient() {
                         Continuar
                       </Button>
                     </div>
+
                     <div className="mt-4 flex justify-center">
                       <button
                         type="button"
@@ -470,6 +518,7 @@ export function OracionFormClient() {
                             <FormLabel className="text-sm font-semibold text-[#2a2e53]">
                               Veces que oras en el día
                             </FormLabel>
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <FormControl>
@@ -486,6 +535,7 @@ export function OracionFormClient() {
                                   </Button>
                                 </FormControl>
                               </DropdownMenuTrigger>
+
                               <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] border-[#d0cfe6] bg-white">
                                 <DropdownMenuRadioGroup
                                   value={field.value}
@@ -502,6 +552,7 @@ export function OracionFormClient() {
                                 </DropdownMenuRadioGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -515,6 +566,7 @@ export function OracionFormClient() {
                             <FormLabel className="text-sm font-semibold text-[#2a2e53]">
                               ¿Eres cristiana(o)?
                             </FormLabel>
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <FormControl>
@@ -531,6 +583,7 @@ export function OracionFormClient() {
                                   </Button>
                                 </FormControl>
                               </DropdownMenuTrigger>
+
                               <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] border-[#d0cfe6] bg-white">
                                 <DropdownMenuRadioGroup
                                   value={field.value}
@@ -547,6 +600,7 @@ export function OracionFormClient() {
                                 </DropdownMenuRadioGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -560,6 +614,7 @@ export function OracionFormClient() {
                             <FormLabel className="text-sm font-semibold text-[#2a2e53]">
                               ¿Qué es lo que más te cuesta al orar?
                             </FormLabel>
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <FormControl>
@@ -576,6 +631,7 @@ export function OracionFormClient() {
                                   </Button>
                                 </FormControl>
                               </DropdownMenuTrigger>
+
                               <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] border-[#d0cfe6] bg-white">
                                 <DropdownMenuRadioGroup
                                   value={field.value}
@@ -592,10 +648,12 @@ export function OracionFormClient() {
                                 </DropdownMenuRadioGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+
                       {form.watch("prayerDifficulty") === "other" && (
                         <FormField
                           control={form.control}
@@ -626,6 +684,7 @@ export function OracionFormClient() {
                             <FormLabel className="text-sm font-semibold text-[#2a2e53]">
                               ¿Qué quieres lograr en tu relación con Dios?
                             </FormLabel>
+
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <FormControl>
@@ -642,6 +701,7 @@ export function OracionFormClient() {
                                   </Button>
                                 </FormControl>
                               </DropdownMenuTrigger>
+
                               <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] border-[#d0cfe6] bg-white">
                                 <DropdownMenuRadioGroup
                                   value={field.value}
@@ -658,10 +718,12 @@ export function OracionFormClient() {
                                 </DropdownMenuRadioGroup>
                               </DropdownMenuContent>
                             </DropdownMenu>
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+
                       {form.watch("prayerGoal") === "other" && (
                         <FormField
                           control={form.control}
@@ -690,6 +752,7 @@ export function OracionFormClient() {
                         Tener mi guía
                       </Button>
                     </div>
+
                     <div className="mt-4 flex justify-center">
                       <button
                         type="button"
@@ -705,6 +768,7 @@ export function OracionFormClient() {
             </div>
           </div>
         </Card>
+
         <div className="pt-2 text-center">
           <p className="mx-auto mt-6 max-w-xl px-4 text-xs leading-5 text-[#66699b]">
             {disclaimerText}{" "}
