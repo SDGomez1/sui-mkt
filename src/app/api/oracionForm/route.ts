@@ -1,4 +1,4 @@
-﻿import { Resend } from "resend";
+import { Resend } from "resend";
 import { z } from "zod";
 import PrayerGuideEmail from "@/components/emailTemplates/OracionFormEmail";
 
@@ -18,46 +18,53 @@ const payloadSchema = z.object({
   prayerGoalOther: z.string().optional(),
 });
 
+const ADMIN_EMAIL = "suivelas087@gmail.com";
+const ADMIN_SUBJECT = "Nuevo registro en landing de oración";
+const USER_SUBJECT = "Tu guía de oración ya está aquí 💜";
+
+const formatOther = (value: string, other?: string) => {
+  if (value !== "other") return value;
+
+  const trimmed = other?.trim();
+  return trimmed ? `Otro: ${trimmed}` : "Otro";
+};
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const payload = payloadSchema.parse(body);
+    const payload = payloadSchema.parse(await request.json());
 
-    const prayerDifficulty =
-      payload.prayerDifficulty === "other"
-        ? payload.prayerDifficultyOther?.trim()
-          ? `Otro: ${payload.prayerDifficultyOther.trim()}`
-          : "Otro"
-        : payload.prayerDifficulty;
-    const prayerGoal =
-      payload.prayerGoal === "other"
-        ? payload.prayerGoalOther?.trim()
-          ? `Otro: ${payload.prayerGoalOther.trim()}`
-          : "Otro"
-        : payload.prayerGoal;
+    const prayerDifficulty = formatOther(
+      payload.prayerDifficulty,
+      payload.prayerDifficultyOther,
+    );
+
+    const prayerGoal = formatOther(
+      payload.prayerGoal,
+      payload.prayerGoalOther,
+    );
 
     const adminHtml = `
-      <h2>Nuevo registro en landing de oraciÃ³n</h2>
+      <h2>${ADMIN_SUBJECT}</h2>
       <p><strong>Nombre:</strong> ${payload.firstName} ${payload.lastName}</p>
       <p><strong>Email:</strong> ${payload.email}</p>
-      <p><strong>TelÃ©fono:</strong> ${payload.countryCode} ${payload.phone}</p>
-      <p><strong>Veces que oras en el dÃ­a:</strong> ${payload.prayerFrequency}</p>
-      <p><strong>Â¿Eres cristiana(o)?:</strong> ${payload.isChristian}</p>
-      <p><strong>Â¿QuÃ© es lo que mÃ¡s te cuesta al orar?:</strong> ${prayerDifficulty}</p>
-      <p><strong>Â¿QuÃ© quieres lograr en tu relaciÃ³n con Dios?:</strong> ${prayerGoal}</p>
+      <p><strong>Teléfono:</strong> ${payload.countryCode} ${payload.phone}</p>
+      <p><strong>Veces que oras en el día:</strong> ${payload.prayerFrequency}</p>
+      <p><strong>¿Eres cristiana(o)?:</strong> ${payload.isChristian}</p>
+      <p><strong>¿Qué es lo que más te cuesta al orar?:</strong> ${prayerDifficulty}</p>
+      <p><strong>¿Qué quieres lograr en tu relación con Dios?:</strong> ${prayerGoal}</p>
     `;
 
     const [adminResponse, userResponse] = await Promise.all([
       resend.emails.send({
         from: "Sui <onboarding@resend.dev>",
-        to: ["suivelas087@gmail.com"],
-        subject: "nuevo registro en landing de oracion",
+        to: [ADMIN_EMAIL],
+        subject: ADMIN_SUBJECT,
         html: adminHtml,
       }),
       resend.emails.send({
         from: "Sui <guias@suivelas.com>",
         to: [payload.email],
-        subject: "Tu guÃ­a de oraciÃ³n ya estÃ¡ aquÃ­ ðŸ’œ",
+        subject: USER_SUBJECT,
         react: PrayerGuideEmail({
           userName: payload.firstName,
           email: payload.email,
@@ -65,16 +72,17 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    if (adminResponse.error || userResponse.error) {
-      return Response.json(
-        { error: adminResponse.error ?? userResponse.error },
-        { status: 500 },
-      );
+    const error = adminResponse.error || userResponse.error;
+
+    if (error) {
+      return Response.json({ error }, { status: 500 });
     }
 
     return Response.json({ ok: true });
-  } catch (error) {
-    return Response.json({ error }, { status: 500 });
+  } catch {
+    return Response.json(
+      { error: "Failed to send email" },
+      { status: 500 },
+    );
   }
 }
-
