@@ -24,6 +24,13 @@ type RowFieldErrors = {
   variables: Record<string, string>;
 };
 
+function sanitizePreviewHtml(html: string) {
+  return html.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    "",
+  );
+}
+
 function createEmptyRecipientRow(tokens: string[]): RecipientRow {
   return {
     email: "",
@@ -97,9 +104,11 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   const [loginMessage, setLoginMessage] = useState("");
   const [isAuthed, setIsAuthed] = useState(false);
   const previewHtml = useDeferredValue(
-    renderPersonalizedHtml(
+    sanitizePreviewHtml(
+      renderPersonalizedHtml(
       html,
       recipients[previewRowIndex] ?? createEmptyRecipientRow(customTokens),
+      ),
     ),
   );
   const verifyLogin = useMutation(api.adminLogin.verify);
@@ -399,7 +408,7 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
         <p className="text-xs text-[#6b6f8f]">
           Usa placeholders como {"{{name}}"} o {"{{utm_source}}"} para
           personalizar cada destinatario. {"{{email}}"} siempre esta
-          disponible.
+          disponible. El preview ignora scripts por seguridad.
         </p>
       </div>
 
