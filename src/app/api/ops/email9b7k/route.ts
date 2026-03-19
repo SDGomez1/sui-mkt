@@ -5,6 +5,7 @@ export const POST = sendEmail;
 export function GET() {
   return Response.json({
     ok: true,
-    message: "Usa POST con { to, subject, html } para enviar el correo.",
+    message:
+      "Usa POST con { subject, html, recipients: [{ email, variables }] } para enviar el correo.",
   });
 }

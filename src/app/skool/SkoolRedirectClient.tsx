@@ -1,9 +1,9 @@
 import TrackedRedirectClient from "@/components/redirects/TrackedRedirectClient";
 
-const REDIRECT_TARGET = "/guiaOracion.pdf";
-const EVENT_NAME = "guia_oracion_pdf_opened";
+const REDIRECT_TARGET = "https://www.skool.com/conecta-con-dios-2729/about";
+const EVENT_NAME = "skool_about_opened";
 
-export default function GuiaOracionRedirectClient() {
+export default function SkoolRedirectClient() {
   return (
     <TrackedRedirectClient
       destination={REDIRECT_TARGET}

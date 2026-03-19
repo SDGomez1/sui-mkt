@@ -22,7 +22,7 @@ const DEFAULT_EMAIL_HTML = `<!DOCTYPE html>
 
       <div style="text-align:center;margin:30px 0;">
         <a
-          href="https://suivelas.com/guiaOracion?utm_source=email&utm_medium=paid&utm_campaign=guia_oracion_bienvenida&utm_content=boton_descarga&email=example@suivelas.com"
+          href="https://suivelas.com/guiaOracion?utm_source=email&utm_medium=paid&utm_campaign=guia_oracion_bienvenida&utm_content=boton_descarga&email={{email}}"
           style="background:#5e6ebf;border-radius:8px;color:#fff;font-size:16px;font-weight:700;text-decoration:none;display:inline-block;padding:12px 24px;"
         >
           Descargar guia de oracion
