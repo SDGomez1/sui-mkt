@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   extractTemplateTokens,
   renderPersonalizedHtml,
+  sanitizeEmailHtml,
   validateRecipientRows,
 } from "@/lib/email9b7kPersonalization";
 
@@ -23,6 +24,13 @@ test("renderPersonalizedHtml resolves email and custom variables", () => {
     }),
     "<p>Hola Ana</p><a href='/?email=ana@example.com'>Abrir</a>",
   );
+});
+
+test("sanitizeEmailHtml removes script tags but keeps markup", () => {
+  const html =
+    "<div>Antes</div><script>window.location='/x'</script><p>Despues</p>";
+
+  assert.equal(sanitizeEmailHtml(html), "<div>Antes</div><p>Despues</p>");
 });
 
 test("validateRecipientRows reports missing variable values with row context", () => {

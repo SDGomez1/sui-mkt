@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   extractTemplateTokens,
   renderPersonalizedHtml,
+  sanitizeEmailHtml,
   validateRecipientRows,
   type RecipientRow,
 } from "@/lib/email9b7kPersonalization";
@@ -100,13 +101,17 @@ export async function sendPersonalizedEmails(
           validation.normalizedRows.map((recipient) => ({
             ...emailPayload,
             to: recipient.email,
-            html: renderPersonalizedHtml(payload.html, recipient),
+            html: sanitizeEmailHtml(
+              renderPersonalizedHtml(payload.html, recipient),
+            ),
           })),
         )
       : await resendClient.emails.send({
           ...emailPayload,
           to: [validation.normalizedRows[0].email],
-          html: renderPersonalizedHtml(payload.html, validation.normalizedRows[0]),
+          html: sanitizeEmailHtml(
+            renderPersonalizedHtml(payload.html, validation.normalizedRows[0]),
+          ),
         });
 
     if (result.error) {

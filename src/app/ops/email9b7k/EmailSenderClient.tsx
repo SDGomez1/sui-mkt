@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   extractTemplateTokens,
   renderPersonalizedHtml,
+  sanitizeEmailHtml,
   validateRecipientRows,
   type RecipientRow,
   type ValidationError,
@@ -23,13 +24,6 @@ type RowFieldErrors = {
   email?: string;
   variables: Record<string, string>;
 };
-
-function sanitizePreviewHtml(html: string) {
-  return html.replace(
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    "",
-  );
-}
 
 function createEmptyRecipientRow(tokens: string[]): RecipientRow {
   return {
@@ -104,10 +98,10 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   const [loginMessage, setLoginMessage] = useState("");
   const [isAuthed, setIsAuthed] = useState(false);
   const previewHtml = useDeferredValue(
-    sanitizePreviewHtml(
+    sanitizeEmailHtml(
       renderPersonalizedHtml(
-      html,
-      recipients[previewRowIndex] ?? createEmptyRecipientRow(customTokens),
+        html,
+        recipients[previewRowIndex] ?? createEmptyRecipientRow(customTokens),
       ),
     ),
   );
