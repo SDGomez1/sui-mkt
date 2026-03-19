@@ -88,6 +88,9 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   const [recipients, setRecipients] = useState<RecipientRow[]>([
     createEmptyRecipientRow(customTokens),
   ]);
+  const [previewRecipients, setPreviewRecipients] = useState<RecipientRow[]>([
+    createEmptyRecipientRow(customTokens),
+  ]);
   const [rowErrors, setRowErrors] = useState<Record<number, RowFieldErrors>>({});
   const [previewRowIndex, setPreviewRowIndex] = useState(0);
   const [loginUser, setLoginUser] = useState("");
@@ -101,7 +104,8 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
     sanitizeEmailHtml(
       renderPersonalizedHtml(
         html,
-        recipients[previewRowIndex] ?? createEmptyRecipientRow(customTokens),
+        previewRecipients[previewRowIndex] ??
+          createEmptyRecipientRow(customTokens),
       ),
     ),
   );
@@ -109,6 +113,10 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
 
   useEffect(() => {
     setRecipients((current) => {
+      const next = syncRecipientRows(current, customTokens);
+      return areRecipientRowsEqual(current, next) ? current : next;
+    });
+    setPreviewRecipients((current) => {
       const next = syncRecipientRows(current, customTokens);
       return areRecipientRowsEqual(current, next) ? current : next;
     });
@@ -261,12 +269,19 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   };
 
   const addRecipientRow = () => {
-    setRecipients((current) => [...current, createEmptyRecipientRow(customTokens)]);
+    const nextRow = createEmptyRecipientRow(customTokens);
+    setRecipients((current) => [...current, nextRow]);
+    setPreviewRecipients((current) => [...current, nextRow]);
     setPreviewRowIndex(recipients.length);
   };
 
   const removeRecipientRow = (rowIndex: number) => {
     setRecipients((current) => {
+      const next = current.filter((_, currentIndex) => currentIndex !== rowIndex);
+
+      return next.length > 0 ? next : [createEmptyRecipientRow(customTokens)];
+    });
+    setPreviewRecipients((current) => {
       const next = current.filter((_, currentIndex) => currentIndex !== rowIndex);
 
       return next.length > 0 ? next : [createEmptyRecipientRow(customTokens)];
@@ -285,6 +300,10 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
 
       return Object.fromEntries(nextEntries);
     });
+  };
+
+  const commitRecipientsToPreview = () => {
+    setPreviewRecipients(syncRecipientRows(recipients, customTokens));
   };
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -487,6 +506,7 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
                     type="email"
                     placeholder="nombre@dominio.com"
                     value={recipient.email}
+                    onBlur={commitRecipientsToPreview}
                     onChange={(event) =>
                       handleRecipientChange(
                         rowIndex,
@@ -509,6 +529,7 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
                     <Input
                       placeholder={`Valor para ${token}`}
                       value={recipient.variables[token] ?? ""}
+                      onBlur={commitRecipientsToPreview}
                       onChange={(event) =>
                         handleRecipientChange(
                           rowIndex,
