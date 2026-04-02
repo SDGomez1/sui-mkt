@@ -2,8 +2,6 @@ import { Resend } from "resend";
 import { z } from "zod";
 import PrayerGuideEmail from "@/components/emailTemplates/OracionFormEmail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const payloadSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -29,8 +27,19 @@ const formatOther = (value: string, other?: string) => {
   return trimmed ? `Otro: ${trimmed}` : "Otro";
 };
 
+const getResendClient = () => {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  return new Resend(apiKey);
+};
+
 export async function POST(request: Request) {
   try {
+    const resend = getResendClient();
     const payload = payloadSchema.parse(await request.json());
 
     const prayerDifficulty = formatOther(

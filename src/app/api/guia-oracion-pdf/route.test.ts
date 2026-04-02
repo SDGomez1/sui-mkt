@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createGuiaOracionPdfResponse } from "@/app/api/guia-oracion-pdf/route";
+import { createGuiaOracionPdfResponse } from "@/app/api/guia-oracion-pdf/createGuiaOracionPdfResponse";
 
 test("createGuiaOracionPdfResponse returns a personalized inline pdf for valid emails", async () => {
   const originalBuffer = Buffer.from("%PDF-original");
