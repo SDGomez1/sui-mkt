@@ -3,13 +3,20 @@ import { Suspense } from "react";
 import {
   RedirectLoadingState,
 } from "@/components/redirects/TrackedRedirectClient";
+import { buildGuiaOracionPdfDestination } from "@/lib/guiaOracionPdf";
 import GuiaOracionRedirectClient from "./GuiaOracionRedirectClient";
 
-const REDIRECT_TARGET = "/guiaOracion.pdf";
+type GuiaOracionRedirectPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default function GuiaOracionRedirectPage() {
+export default async function GuiaOracionRedirectPage({
+  searchParams,
+}: GuiaOracionRedirectPageProps) {
+  const destination = buildGuiaOracionPdfDestination(await searchParams);
+
   return (
-    <Suspense fallback={<RedirectLoadingState destination={REDIRECT_TARGET} />}>
+    <Suspense fallback={<RedirectLoadingState destination={destination} />}>
       <GuiaOracionRedirectClient />
     </Suspense>
   );

@@ -1,6 +1,12 @@
 "use client";
 
-import { Fragment, useDeferredValue, useEffect, useState } from "react";
+import {
+  Fragment,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
@@ -15,6 +21,13 @@ import {
   type RecipientRow,
   type ValidationError,
 } from "@/lib/email9b7kPersonalization";
+import {
+  buildSpreadsheetExample,
+  getSpreadsheetColumns,
+  parseRecipientSpreadsheet,
+  type SpreadsheetImportError,
+  type SpreadsheetImportResult,
+} from "@/lib/email9b7kSpreadsheet";
 
 type EmailSenderClientProps = {
   initialHtml: string;
@@ -23,6 +36,14 @@ type EmailSenderClientProps = {
 type RowFieldErrors = {
   email?: string;
   variables: Record<string, string>;
+};
+
+type ImportState = {
+  status: "idle" | "parsing" | "ready" | "error";
+  fileName: string;
+  message: string;
+  errors: SpreadsheetImportError[];
+  result: SpreadsheetImportResult | null;
 };
 
 function createEmptyRecipientRow(tokens: string[]): RecipientRow {
@@ -74,6 +95,20 @@ function mapValidationErrors(errors: ValidationError[]) {
   return nextMap;
 }
 
+function createEmptyImportState(): ImportState {
+  return {
+    status: "idle",
+    fileName: "",
+    message: "",
+    errors: [],
+    result: null,
+  };
+}
+
+function formatRowCountLabel(count: number) {
+  return `${count} ${count === 1 ? "fila" : "filas"}`;
+}
+
 export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
   const [subject, setSubject] = useState("");
   const [html, setHtml] = useState(initialHtml);
@@ -81,6 +116,8 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
     (token) => token !== "email",
   );
   const tokensKey = customTokens.join("|");
+  const spreadsheetColumns = getSpreadsheetColumns(customTokens);
+  const spreadsheetExample = buildSpreadsheetExample(customTokens);
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
     "idle",
   );
@@ -92,6 +129,9 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
     createEmptyRecipientRow(customTokens),
   ]);
   const [rowErrors, setRowErrors] = useState<Record<number, RowFieldErrors>>({});
+  const [importState, setImportState] = useState<ImportState>(
+    createEmptyImportState(),
+  );
   const [previewRowIndex, setPreviewRowIndex] = useState(0);
   const [loginUser, setLoginUser] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -110,16 +150,23 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
     ),
   );
   const verifyLogin = useMutation(api.adminLogin.verify);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const nextTokens = tokensKey.length > 0 ? tokensKey.split("|") : [];
+
     setRecipients((current) => {
-      const next = syncRecipientRows(current, customTokens);
+      const next = syncRecipientRows(current, nextTokens);
       return areRecipientRowsEqual(current, next) ? current : next;
     });
     setPreviewRecipients((current) => {
-      const next = syncRecipientRows(current, customTokens);
+      const next = syncRecipientRows(current, nextTokens);
       return areRecipientRowsEqual(current, next) ? current : next;
     });
+    setImportState(createEmptyImportState());
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }, [tokensKey]);
 
   useEffect(() => {
@@ -266,6 +313,81 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
 
       return next;
     });
+  };
+
+  const resetImportState = () => {
+    setImportState(createEmptyImportState());
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSpreadsheetUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      resetImportState();
+      return;
+    }
+
+    setImportState({
+      status: "parsing",
+      fileName: file.name,
+      message: "Leyendo archivo...",
+      errors: [],
+      result: null,
+    });
+
+    const result = await parseRecipientSpreadsheet(file, customTokens);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    if (!result.ok) {
+      setImportState({
+        status: "error",
+        fileName: file.name,
+        message: result.errors[0]?.message ?? "No se pudo importar el archivo.",
+        errors: result.errors,
+        result: null,
+      });
+      return;
+    }
+
+    const validationCount = result.result.validationErrors.length;
+    const importMessage =
+      validationCount > 0
+        ? `Se importaron ${formatRowCountLabel(
+            result.result.rows.length,
+          )} con observaciones. Puedes reemplazarlas y corregirlas en la tabla.`
+        : `Archivo listo. Se detectaron ${formatRowCountLabel(
+            result.result.rows.length,
+          )} para revisar antes de reemplazar.`;
+
+    setImportState({
+      status: "ready",
+      fileName: file.name,
+      message: importMessage,
+      errors: [],
+      result: result.result,
+    });
+  };
+
+  const applyImportedRows = () => {
+    if (!importState.result) {
+      return;
+    }
+
+    const nextRows = syncRecipientRows(importState.result.rows, customTokens);
+
+    setRecipients(nextRows);
+    setPreviewRecipients(nextRows);
+    setPreviewRowIndex(0);
+    setRowErrors(mapValidationErrors(importState.result.validationErrors));
+    resetImportState();
   };
 
   const addRecipientRow = () => {
@@ -455,6 +577,194 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
         </div>
       </div>
 
+      <div className="space-y-4 rounded-2xl border border-[#e2e0db] bg-[#f7f6f2] p-4">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Label className="text-sm font-medium text-[#1d2142]">
+              Formato del Excel
+            </Label>
+            <span className="text-xs text-[#6b6f8f]">
+              CSV y XLSX, con `email` siempre al final.
+            </span>
+          </div>
+          <p className="text-xs text-[#6b6f8f]">
+            La fila 1 debe tener las columnas en este orden exacto. Desde la
+            fila 2 van los datos.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
+            Cabecera esperada
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {spreadsheetColumns.map((column) => (
+              <span
+                key={column}
+                className="rounded-full bg-white px-3 py-1 text-xs font-medium text-[#1d2142]"
+              >
+                {column}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
+            Ejemplo en tiempo real
+          </p>
+          <div className="overflow-x-auto rounded-2xl border border-[#e2e0db] bg-white">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-[#fbfaf7] text-xs uppercase tracking-[0.2em] text-[#6b6f8f]">
+                <tr>
+                  {spreadsheetExample.headers.map((header) => (
+                    <th key={header} className="px-3 py-2 font-semibold">
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {spreadsheetExample.rows.map((row, rowIndex) => (
+                  <tr key={rowIndex} className="border-t border-[#f0eee8]">
+                    {row.map((value, cellIndex) => (
+                      <td key={`${rowIndex}-${cellIndex}`} className="px-3 py-2 text-[#4b4f73]">
+                        {value}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4 rounded-2xl border border-[#e2e0db] bg-white p-4">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Label htmlFor="spreadsheet-upload">Importar destinatarios</Label>
+            <span className="text-xs text-[#6b6f8f]">
+              Sube un archivo y revisa el resultado antes de reemplazar la
+              tabla.
+            </span>
+          </div>
+          <Input
+            ref={fileInputRef}
+            id="spreadsheet-upload"
+            type="file"
+            accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            onChange={handleSpreadsheetUpload}
+          />
+        </div>
+
+        {importState.status !== "idle" ? (
+          <div className="space-y-3 rounded-2xl border border-[#e2e0db] bg-[#f7f6f2] p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium text-[#1d2142]">
+                  {importState.fileName}
+                </p>
+                <p className="text-xs text-[#6b6f8f]">{importState.message}</p>
+              </div>
+              {importState.status === "parsing" ? (
+                <span className="text-xs font-medium text-[#6b6f8f]">
+                  Procesando...
+                </span>
+              ) : null}
+            </div>
+
+            <div className="flex flex-wrap gap-2 text-xs text-[#6b6f8f]">
+              <span>Cabecera esperada:</span>
+              <span className="font-medium text-[#1d2142]">
+                {spreadsheetColumns.join(", ")}
+              </span>
+            </div>
+
+            {importState.status === "error" ? (
+              <div className="space-y-2">
+                {importState.errors.map((error, index) => (
+                  <p key={`${error.message}-${index}`} className="text-sm text-red-600">
+                    {error.message}
+                  </p>
+                ))}
+              </div>
+            ) : null}
+
+            {importState.status === "ready" && importState.result ? (
+              <Fragment>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
+                    Preview de importacion
+                  </p>
+                  <div className="overflow-x-auto rounded-2xl border border-[#e2e0db] bg-white">
+                    <table className="min-w-full text-left text-sm">
+                      <thead className="bg-[#fbfaf7] text-xs uppercase tracking-[0.2em] text-[#6b6f8f]">
+                        <tr>
+                          {importState.result.headers.map((header) => (
+                            <th key={header} className="px-3 py-2 font-semibold">
+                              {header}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {importState.result.previewRows.slice(0, 5).map((row, rowIndex) => (
+                          <tr key={rowIndex} className="border-t border-[#f0eee8]">
+                            {row.map((value, cellIndex) => (
+                              <td
+                                key={`${rowIndex}-${cellIndex}`}
+                                className="px-3 py-2 text-[#4b4f73]"
+                              >
+                                {value || "—"}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-xs text-[#6b6f8f]">
+                    {formatRowCountLabel(importState.result.rows.length)} detectadas.
+                    {importState.result.previewRows.length > 5
+                      ? " Se muestran solo las primeras 5."
+                      : ""}
+                  </p>
+                </div>
+
+                {importState.result.validationErrors.length > 0 ? (
+                  <div className="space-y-2 rounded-2xl border border-amber-200 bg-amber-50 p-3">
+                    <p className="text-sm font-medium text-amber-900">
+                      Observaciones en las filas importadas
+                    </p>
+                    {importState.result.validationErrors.slice(0, 5).map((error, index) => (
+                      <p key={`${error.message}-${index}`} className="text-sm text-amber-900">
+                        {error.message}
+                      </p>
+                    ))}
+                    {importState.result.validationErrors.length > 5 ? (
+                      <p className="text-xs text-amber-900">
+                        Hay mas observaciones. Si reemplazas la tabla, podras verlas
+                        y corregirlas fila por fila.
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button type="button" onClick={applyImportedRows}>
+                    Reemplazar filas actuales
+                  </Button>
+                  <Button type="button" variant="outline" onClick={resetImportState}>
+                    Cancelar importacion
+                  </Button>
+                </div>
+              </Fragment>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Label>Destinatarios</Label>
@@ -466,14 +776,11 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
           <div
             className="grid min-w-[720px] gap-px bg-[#e2e0db]"
             style={{
-              gridTemplateColumns: `80px minmax(220px, 1.4fr) repeat(${customTokens.length}, minmax(180px, 1fr)) 120px`,
+              gridTemplateColumns: `80px repeat(${customTokens.length}, minmax(180px, 1fr)) minmax(220px, 1.4fr) 120px`,
             }}
           >
             <div className="bg-[#f7f6f2] px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
               Preview
-            </div>
-            <div className="bg-[#f7f6f2] px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
-              Email
             </div>
             {customTokens.map((token) => (
               <div
@@ -483,6 +790,9 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
                 {token}
               </div>
             ))}
+            <div className="bg-[#f7f6f2] px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
+              Email
+            </div>
             <div className="bg-[#f7f6f2] px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#6b6f8f]">
               Accion
             </div>
@@ -500,29 +810,6 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
                   >
                     {previewRowIndex === rowIndex ? "Activa" : "Ver"}
                   </Button>
-                </div>
-                <div className="bg-white px-3 py-3">
-                  <Input
-                    type="email"
-                    placeholder="nombre@dominio.com"
-                    value={recipient.email}
-                    onBlur={commitRecipientsToPreview}
-                    onChange={(event) =>
-                      handleRecipientChange(
-                        rowIndex,
-                        "email",
-                        event.target.value,
-                      )
-                    }
-                    className={
-                      rowErrors[rowIndex]?.email ? "border-red-500" : undefined
-                    }
-                  />
-                  {rowErrors[rowIndex]?.email ? (
-                    <p className="mt-1 text-xs text-red-600">
-                      {rowErrors[rowIndex].email}
-                    </p>
-                  ) : null}
                 </div>
                 {customTokens.map((token) => (
                   <div key={`${token}-${rowIndex}`} className="bg-white px-3 py-3">
@@ -551,6 +838,29 @@ export function EmailSenderClient({ initialHtml }: EmailSenderClientProps) {
                     ) : null}
                   </div>
                 ))}
+                <div className="bg-white px-3 py-3">
+                  <Input
+                    type="email"
+                    placeholder="nombre@dominio.com"
+                    value={recipient.email}
+                    onBlur={commitRecipientsToPreview}
+                    onChange={(event) =>
+                      handleRecipientChange(
+                        rowIndex,
+                        "email",
+                        event.target.value,
+                      )
+                    }
+                    className={
+                      rowErrors[rowIndex]?.email ? "border-red-500" : undefined
+                    }
+                  />
+                  {rowErrors[rowIndex]?.email ? (
+                    <p className="mt-1 text-xs text-red-600">
+                      {rowErrors[rowIndex].email}
+                    </p>
+                  ) : null}
+                </div>
                 <div className="bg-white px-3 py-3">
                   <Button
                     type="button"
