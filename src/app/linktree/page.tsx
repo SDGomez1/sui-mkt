@@ -38,7 +38,7 @@ export default function LinktreePage() {
 
             <p className="mx-auto mt-8 max-w-md text-sm font-medium text-[#60679d]">
               Elige el canal que mas te ayude hoy y sigue profundizando tu
-              relacion con Dios.
+              relación con Dios.
             </p>
           </div>
         </div>
