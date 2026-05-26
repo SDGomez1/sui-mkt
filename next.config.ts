@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    outputFileTracingIncludes: {
+        "/api/guia-oracion-pdf": ["./public/guiaOracion.pdf"],
+    },
     images: {
         remotePatterns: [new URL("https://051hypth9e.ufs.sh/**")]
     },
